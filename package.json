@@ -1,0 +1,23 @@
+{
+  "name": "whybot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WhyBot: an agent that explains why your numbers moved, with evidence. Zetaris + Meterless + NVIDIA Nemotron.",
+  "type": "module",
+  "scripts": {
+    "why": "tsx src/cli.ts why",
+    "check": "tsx src/cli.ts check",
+    "memory": "tsx src/cli.ts memory",
+    "test": "tsx --test test/*.test.ts",
+    "conformance": "tsx scripts/conformance.ts",
+    "data:generate": "tsx scripts/generate-data.ts",
+    "data:up": "docker compose -f data/docker-compose.yml up -d",
+    "data:down": "docker compose -f data/docker-compose.yml down",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

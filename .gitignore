@@ -1,0 +1,27 @@
+# dependencies and local tooling
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# secrets: never commit (only .env.example is tracked)
+.env
+.env.*
+!.env.example
+*.env
+
+# local runtime state
+runs/
+.whybot/
+*.log
+
+# third-party clone made by setup/02-zetaris-wsl.sh (has its own .env.local)
+zetaris-getting-started/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/
+.cursor/

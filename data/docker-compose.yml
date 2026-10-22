@@ -1,0 +1,35 @@
+# WhyBot demo data: one Postgres server with two databases (adsdb, appdb),
+# joined to the Zetaris Docker network so the Zetaris driver can reach it as
+# whybot-pg:5432. Seed files run once, on first start of an empty volume.
+#
+#   npm run data:up      (from the repo root)
+#   npm run data:down    (keeps the data volume)
+#
+# Re-seed after changing scripts/generate-data.ts:
+#   docker compose -f data/docker-compose.yml down -v && npm run data:up
+services:
+  whybot-pg:
+    image: postgres:16-alpine
+    container_name: whybot-pg
+    environment:
+      POSTGRES_USER: whybot
+      POSTGRES_PASSWORD: ${WHYBOT_PG_PASSWORD:-whybot_local_dev}
+      POSTGRES_DB: whybot
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - ./seed:/docker-entrypoint-initdb.d:ro
+      - whybot-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U whybot -d appdb"]
+      interval: 5s
+      retries: 30
+    networks: [zetaris]
+
+volumes:
+  whybot-pgdata:
+
+networks:
+  zetaris:
+    external: true
+    name: zetaris_default
