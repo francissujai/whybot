@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { EvidenceLedger } from "../src/agent/evidence.ts";
-import { completionGap, investigate, labelQuery, makeInvestigatorGenerator, MAX_QUERIES_PER_CHUNK } from "../src/agent/investigator.ts";
+import { completionGap, investigate, labelQuery, stripInlineCompletion, makeInvestigatorGenerator, MAX_QUERIES_PER_CHUNK } from "../src/agent/investigator.ts";
 import { lintSql } from "../src/zetaris/lint.ts";
 import { checkCitations, markdownToHtml, renderHtml } from "../src/agent/report.ts";
 import type { ChatMessage, ChatProvider, ChatResult } from "../src/llm/meterless.ts";
@@ -166,4 +166,11 @@ test("HTML report escapes SQL and links evidence", async () => {
   assert.ok(html.includes('id="E1"'));
   assert.ok(!html.includes("<script>"));
   assert.ok(html.includes("q &lt;b&gt;"));
+});
+
+test("a quoted [TASK_COMPLETE] or a planned verdict does not end the investigation", () => {
+  assert.equal(stripInlineCompletion("Step 5: write the conclusion and end with [TASK_COMPLETE]; otherwise query more."), "Step 5: write the conclusion and end with the completion marker; otherwise query more.");
+  assert.equal(stripInlineCompletion("Conclusion. [TASK_COMPLETE]\n"), "Conclusion. [TASK_COMPLETE]");
+  const plan = "H1 ads: SUPPORTED [E2]; H3 pricing: RULED OUT [E4]; H4 holidays: RULED OUT [E5]\n2. Test H2 (tracking/product release): query events; verdict SUPPORTED with effect size or RULED OUT.";
+  assert.match(completionGap(plan) ?? "", /H2 has no verdict/);
 });

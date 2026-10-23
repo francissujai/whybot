@@ -29,7 +29,7 @@ Final investigation state:
 ${inv.run.finalState}
 
 Investigation notes, step by step:
-${inv.run.chunks.map((c) => `--- step ${c.id}\n${c.content}`).join("\n")}
+${inv.run.chunks.map((c) => `--- step ${c.id}\n${c.content.replace(/<sql[\s\S]*?(<\/sql>|$)/gi, "").trim().slice(0, 700)}`).join("\n")}
 
 Evidence (id, hypothesis, purpose, rows):
 ${evidenceIndex}

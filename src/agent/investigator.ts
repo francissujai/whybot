@@ -94,12 +94,12 @@ export function makeInvestigatorGenerator(llm: ChatProvider, ledger: EvidenceLed
     const ask = async () => {
       let r;
       try {
-        r = await llm.chat(messages, { maxTokens: 3000, signal });
+        r = await llm.chat(messages, { maxTokens: 5000, signal });
       } catch (err) {
         // One more try after a pause; the provider already retried transient errors.
         if (signal?.aborted) throw err;
         await new Promise((res) => setTimeout(res, 15_000));
-        r = await llm.chat(messages, { maxTokens: 3000, signal });
+        r = await llm.chat(messages, { maxTokens: 5000, signal });
       }
       if (r.usage) {
         usage.promptTokens += r.usage.promptTokens;
@@ -142,7 +142,8 @@ export function makeInvestigatorGenerator(llm: ChatProvider, ledger: EvidenceLed
       messages.push({ role: "user", content: "End this chunk now: [STATE_CHECKPOINT] with the state block, or [TASK_COMPLETE] if every hypothesis has a verdict." });
       final += "\n" + (await ask());
     }
-    // Completion guard: [TASK_COMPLETE] only counts once every hypothesis has a verdict.
+    // Completion guard: [TASK_COMPLETE] only counts as the last word, once every hypothesis has a verdict.
+    final = stripInlineCompletion(final);
     if (/\[TASK_COMPLETE\]/.test(final)) {
       const gap = completionGap(`${prompt}\n${final}`);
       if (gap) {
@@ -165,15 +166,26 @@ export function makeInvestigatorGenerator(llm: ChatProvider, ledger: EvidenceLed
   };
 }
 
-const VERDICT = /\b(SUPPORTED|RULED OUT|INCONCLUSIVE)\b/i;
+/**
+ * A verdict is "H3 <label>: RULED OUT" or "H3 SUPPORTED". A plan such as
+ * "Test H2 (tracking): query ... verdict SUPPORTED or RULED OUT" does not count.
+ */
+const VERDICT_FOR = /\bH([1-9]\d?)\b[^;\n:]{0,80}[:\s]\s*\**\s*(SUPPORTED|RULED OUT|INCONCLUSIVE)\b/gi;
+
+/** [TASK_COMPLETE] only counts as the chunk's last word, not when quoted inside a plan. */
+export function stripInlineCompletion(text: string): string {
+  const t = text.trimEnd();
+  const at = t.lastIndexOf("[TASK_COMPLETE]");
+  if (at < 0) return text;
+  const isLast = t.slice(at + "[TASK_COMPLETE]".length).trim().length === 0;
+  const rest = t.slice(0, isLast ? at : t.length).replace(/\[TASK_COMPLETE\]/g, "the completion marker");
+  return isLast ? `${rest}[TASK_COMPLETE]` : rest;
+}
 
 /** Why the investigation may not finish yet, or undefined when it may. */
 export function completionGap(text: string): string | undefined {
   const mentioned = new Set([...text.matchAll(/\bH([1-9]\d?)\b/g)].map((m) => `H${m[1]}`));
-  const verdicted = new Set<string>();
-  for (const segment of text.split(/[;\n]/)) {
-    if (VERDICT.test(segment)) for (const m of segment.matchAll(/\bH([1-9]\d?)\b/g)) verdicted.add(`H${m[1]}`);
-  }
+  const verdicted = new Set([...text.matchAll(VERDICT_FOR)].map((m) => `H${m[1]}`));
   const missing = [...mentioned].filter((h) => !verdicted.has(h));
   if (verdicted.size < 3) return `only ${verdicted.size} hypotheses have a verdict${verdicted.size ? ` (${[...verdicted].join(", ")})` : ""}; test at least three competing hypotheses.`;
   if (missing.length) return `${missing.join(", ")} ${missing.length === 1 ? "has" : "have"} no verdict yet.`;
