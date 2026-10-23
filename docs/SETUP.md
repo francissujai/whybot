@@ -39,6 +39,7 @@ Please create your own NVIDIA key rather than sharing one. It's free, keys are p
 | 13 | Configure WhyBot: `copy .env.example .env`, then set `ZETARIS_API_KEY` and `MODEL_API_KEY` (the Runtime token from Nightshift → Console) | repo root | — |
 | 14 | Check everything | `npm run check` | every line PASS |
 | 15 | Run an investigation | `npm run why -- "Why did trial signups drop 18% last week?"` | `runs/<timestamp>/report.html` |
+| 16 | Or use the web UI | `npm run serve`, then open http://127.0.0.1:4173 | question box, live steps, report |
 
 ## Where secrets go (never commit them)
 

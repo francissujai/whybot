@@ -46,7 +46,7 @@ Two to four concrete actions with an owner (marketing, growth, analytics, engine
 ## Caveats
 What the data cannot tell us.
 
-Rules: cite evidence ids in square brackets like [E3] after every number. Use only numbers that appear in the evidence or the notes. Do not invent evidence ids. Keep the whole report under 450 words.`;
+Rules: name the specific event behind each cause (release version and time, or campaign and change) when the notes or evidence identify it. Cite evidence ids in square brackets like [E3] after every number. Use only numbers that appear in the evidence or the notes. Do not invent evidence ids. Keep the whole report under 450 words.`;
   const messages = [
     { role: "system" as const, content: "You are WhyBot's report writer. Precise, plain English, no hype. Every number is cited." },
     { role: "user" as const, content: prompt },

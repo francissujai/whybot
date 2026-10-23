@@ -43,6 +43,7 @@ METHOD
 - Each later chunk tests ONE hypothesis with a decisive query and gives a verdict: SUPPORTED (with the size of its effect), RULED OUT, or INCONCLUSIVE, citing evidence ids.
 - Check measurement before blaming demand: compare the dashboard metric with the backend source of truth for the same weeks and segments. A gap between them is a measurement change, not a business change.
 - Size every effect. A cause is SUPPORTED only if it moves the metric by a material share of the total change over the same period; a cause confined to one day cannot explain a week-long drop on its own.
+- Trace every SUPPORTED cause to a specific event: the release (version, component, time) from app_pg.release_log or the ad change (campaign, change, old -> new value, time) from ads_pg.ad_change_log. Confirm the timing with a daily series around that event. Judge each change separately; two changes on nearby days are two hypotheses, not one.
 - Quantify how much of the total change each supported cause explains, and say what is left unexplained.
 - Never state a number that is not in a result you received.
 - When every hypothesis has a verdict and the parts add up, write a 3-5 sentence conclusion and end with [TASK_COMPLETE].

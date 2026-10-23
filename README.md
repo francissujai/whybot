@@ -84,6 +84,8 @@ npm run check                           # Power and Data checks: every line shou
 npm run why -- "Why did trial signups drop 18% last week?"
 ```
 
+Or use the web UI: `npm run serve` and open http://127.0.0.1:4173 to ask a question, watch each step stream in, and open the report.
+
 Each run writes `runs/<timestamp>/` containing `report.html` (open it in a browser), `report.md`, `evidence.json` (every SQL statement and its rows) and `run.json` (the Markovian run record).
 
 Run a related question afterwards to watch H-MEM at work. The first step starts from what WhyBot already learned:
@@ -105,6 +107,8 @@ npm run memory -- list
 ```
 src/
   cli.ts                     npm run why | check | memory
+  server.ts, ui/page.ts      npm run serve: web UI with live progress (127.0.0.1:4173)
+  agent/session.ts           one investigation end to end, shared by CLI and UI
   agent/investigator.ts      Markovian-powered investigation loop with the SQL tool
   agent/evidence.ts          evidence ledger (E1, E2, ...)
   agent/report.ts            report writer, citation check, HTML render

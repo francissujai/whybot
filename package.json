@@ -9,6 +9,7 @@
     "check": "tsx src/cli.ts check",
     "demo:facts": "tsx scripts/demo-facts.ts",
     "memory": "tsx src/cli.ts memory",
+    "serve": "tsx src/server.ts",
     "test": "tsx --test test/*.test.ts",
     "conformance": "tsx scripts/conformance.ts",
     "data:generate": "tsx scripts/generate-data.ts",

@@ -6,16 +6,10 @@
 // Each investigation writes runs/<timestamp>/ with report.md, report.html,
 // evidence.json (every SQL + rows) and run.json (the Markovian run record).
 
-import fs from "node:fs";
-import path from "node:path";
-import { ROOT } from "./env.ts";
-import { checkProvider, MeterlessProvider, ReceiptLog } from "./llm/meterless.ts";
+import { checkProvider, MeterlessProvider } from "./llm/meterless.ts";
 import { ZetarisClient } from "./zetaris/client.ts";
-import { EvidenceLedger } from "./agent/evidence.ts";
-import { investigate } from "./agent/investigator.ts";
-import { checkCitations, renderHtml, writeReport } from "./agent/report.ts";
-import { learn, openMemory, recall } from "./agent/memory.ts";
-import { asOf } from "./agent/catalog.ts";
+import { openMemory } from "./agent/memory.ts";
+import { runSession } from "./agent/session.ts";
 
 const [, , command, ...rest] = process.argv;
 
@@ -54,58 +48,45 @@ async function why(question: string): Promise<number> {
     console.error('Usage: npm run why -- "Why did trial signups drop 18% last week?"');
     return 2;
   }
-  const useMemory = !flags.has("--no-memory");
-  const llm = new ReceiptLog(new MeterlessProvider());
-  if (flags.has("--verbose")) llm.onCall = (c) => console.log(`    · ${c.purpose} ${(c.ms / 1000).toFixed(1)}s ${c.error ? `FAILED ${c.error.slice(0, 80)}` : `${c.route?.label ?? "?"} ${c.usage ? `${c.usage.promptTokens}+${c.usage.completionTokens}` : ""}`}`);
-  const ledger = new EvidenceLedger(new ZetarisClient());
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const dir = path.join(ROOT, "runs", stamp);
-  fs.mkdirSync(dir, { recursive: true });
+  const verbose = flags.has("--verbose");
+  const result = await runSession(question, {
+    useMemory: !flags.has("--no-memory"),
+    onEvent: (e) => {
+      switch (e.type) {
+        case "start":
+          return console.log(`WhyBot · ${e.question}
+model ${e.model} via ${e.provider}
+`);
+        case "memory":
+          return console.log(`H-MEM recalled ${e.recalled.length} memories${e.recalled.map((m) => `
+  ${m.id} ${m.content.slice(0, 110)}`).join("")}
+`);
+        case "call":
+          if (verbose) console.log(`    · ${e.purpose} ${e.seconds.toFixed(1)}s ${e.error ? `FAILED ${e.error.slice(0, 80)}` : `${e.model ?? "?"} (${e.kind ?? "?"}) ${e.tokensIn ?? ""}+${e.tokensOut ?? ""}`}`);
+          return;
+        case "query":
+          return console.log(`  ${e.id.padEnd(4)} ${e.hypothesis.padEnd(4)} ${e.purpose}${e.error ? `  ✗ ${e.error.slice(0, 120)}` : `  (${e.rows} rows)`}`);
+        case "guard":
+          return console.log(`  guard: ${e.message}`);
+        case "step":
+          return console.log(`step ${e.step} done · prompt ${e.promptTokens ?? "?"} tokens · carryover ${Math.ceil(e.state.length / 4)} tokens
+${indent(e.state)}
+`);
+        case "report":
+          return console.log(`
+${e.markdown}
 
-  console.log(`WhyBot · ${question}\nmodel ${llm.model} via ${llm.name}\n`);
-  const mem = useMemory ? openMemory() : undefined;
-  const { context, recalled } = mem ? recall(mem, question) : { context: "", recalled: [] };
-  console.log(mem ? `H-MEM recalled ${recalled.length} memories${recalled.length ? ":\n" + recalled.map((m) => `  ${m.id} ${m.content.slice(0, 110)}`).join("\n") : ""}\n` : "memory off\n");
-
-  const inv = await investigate({
-    question,
-    llm,
-    ledger,
-    memoryContext: context || undefined,
-    historyDir: path.join(ROOT, "runs"),
-    events: {
-      onQuery: (q) => console.log(`  ${q.id.padEnd(4)} ${q.hypothesis.padEnd(4)} ${q.purpose}${q.error ? `  ✗ ${q.error.slice(0, 120)}` : `  (${q.rows} rows)`}`),
-      onGuard: (m) => console.log(`  guard: ${m}`),
-      onChunk: (c, carry) =>
-        console.log(`step ${c.id} done · prompt ${c.promptTokens ?? "?"} tokens · carryover ${Math.ceil(carry.length / 4)} tokens\n${indent(carry)}\n`),
+citations: ${e.cited} cited, ${e.unknown} unknown, ${e.uncited} uncited numbers`);
+        case "error":
+          return console.error(`error: ${e.message}`);
+        case "done":
+          for (const s of e.served) console.log(`served by ${s}`);
+          return console.log(`investigation ${e.status} in ${e.seconds.toFixed(0)} s, ${e.steps} steps, ${e.queries} queries${e.reportPath ? `
+report: ${e.reportPath}` : ""}`);
+      }
     },
   });
-  console.log(`investigation ${inv.run.status} in ${(inv.run.durationMs / 1000).toFixed(0)} s, ${inv.run.chunks.length} steps, ${ledger.items.length} queries`);
-  if (inv.run.error) console.log(`  note: ${inv.run.error}`);
-  if (!inv.run.chunks.length) {
-    fs.writeFileSync(path.join(dir, "run.json"), JSON.stringify(inv.run, null, 2));
-    fs.writeFileSync(path.join(dir, "evidence.json"), JSON.stringify(ledger.items, null, 2));
-    fs.writeFileSync(path.join(dir, "receipts.json"), JSON.stringify(llm.calls, null, 2));
-    console.error("no investigation steps completed; skipping the report");
-    return 1;
-  }
-
-  const report = await writeReport(inv, llm.as("report"));
-  const check = checkCitations(report, ledger.items);
-  const w = asOf();
-  const written = mem ? learn(mem, inv, stamp, `Week ${w.lastWeek[0]}..${w.lastWeek[1]}`) : [];
-  if (mem) console.log(`H-MEM stored ${written.length} findings`);
-  fs.writeFileSync(path.join(dir, "report.md"), `# ${question}\n\n${report}\n`);
-  fs.writeFileSync(path.join(dir, "report.html"), renderHtml(inv, report, check, { provider: llm.name, model: llm.model, recalled, written, receipts: llm.summary() }));
-  fs.writeFileSync(path.join(dir, "evidence.json"), JSON.stringify(ledger.items, null, 2));
-  fs.writeFileSync(path.join(dir, "run.json"), JSON.stringify(inv.run, null, 2));
-  fs.writeFileSync(path.join(dir, "receipts.json"), JSON.stringify(llm.calls, null, 2));
-  for (const r of llm.summary()) console.log(`served by ${r.label} (${r.provider}, ${r.kind}): ${r.calls} calls, ${r.tokensIn}+${r.tokensOut} tokens`);
-
-  console.log(`\n${report}\n`);
-  console.log(`citations: ${check.cited.length} cited, ${check.unknown.length} unknown, ${check.uncitedNumbers.length} uncited numbers`);
-  console.log(`report: ${path.join(dir, "report.html")}`);
-  return inv.run.status === "completed" ? 0 : 1;
+  return result.ok ? 0 : 1;
 }
 
 const indent = (s: string) => s.split("\n").map((l) => `    ${l}`).join("\n");
