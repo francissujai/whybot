@@ -7,6 +7,7 @@
   "scripts": {
     "why": "tsx src/cli.ts why",
     "check": "tsx src/cli.ts check",
+    "demo:facts": "tsx scripts/demo-facts.ts",
     "memory": "tsx src/cli.ts memory",
     "test": "tsx --test test/*.test.ts",
     "conformance": "tsx scripts/conformance.ts",

@@ -158,3 +158,4 @@ Meterless provides two separate things.
 - `README.md`: architecture, engine mapping, how to run.
 - `docs/SETUP.md`: machine setup.
 - `docs/ZETARIS_FINDINGS.md`: the Zetaris bug write-up.
+- `docs/DEMO_SCRIPT.md`: the team demo talk track.
