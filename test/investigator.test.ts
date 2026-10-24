@@ -95,7 +95,9 @@ test("premature [TASK_COMPLETE] is refused and turned into a checkpoint", async 
     `${state("H1 tracking: SUPPORTED [E1]", "H2 ads; H3 holiday")}`,
   ]);
   const guards: string[] = [];
-  const gen = makeInvestigatorGenerator(llm, new EvidenceLedger(new FakeSql()), { onGuard: (m) => guards.push(m) });
+  const seeded = new EvidenceLedger(new FakeSql());
+  await seeded.run("SELECT 1", "H0", "seed");
+  const gen = makeInvestigatorGenerator(llm, seeded, { onGuard: (m) => guards.push(m) });
   const out = await gen("User Request: why? Hypotheses H1 tracking, H2 ads, H3 holiday", [], "system");
   assert.equal(guards.length, 1);
   assert.match(guards[0], /only 1 hypotheses have a verdict/);
@@ -173,4 +175,18 @@ test("a quoted [TASK_COMPLETE] or a planned verdict does not end the investigati
   assert.equal(stripInlineCompletion("Conclusion. [TASK_COMPLETE]\n"), "Conclusion. [TASK_COMPLETE]");
   const plan = "H1 ads: SUPPORTED [E2]; H3 pricing: RULED OUT [E4]; H4 holidays: RULED OUT [E5]\n2. Test H2 (tracking/product release): query events; verdict SUPPORTED with effect size or RULED OUT.";
   assert.match(completionGap(plan) ?? "", /H2 has no verdict/);
+});
+
+test("the first step must run a query before it can checkpoint", async () => {
+  const llm = new ScriptedLLM([
+    `From memory the drop is 18%.
+${state("H0 quantified", "H1; H2; H3")}`,
+    `<sql hypothesis="H0" purpose="weekly totals">SELECT 1</sql>`,
+    state("H0 quantified [E1]", "H1; H2; H3"),
+  ]);
+  const guards: string[] = [];
+  const ledger = new EvidenceLedger(new FakeSql());
+  await makeInvestigatorGenerator(llm, ledger, { onGuard: (m) => guards.push(m) })("goal", [], "system");
+  assert.match(guards[0], /no query run yet/);
+  assert.equal(ledger.items.length, 1);
 });

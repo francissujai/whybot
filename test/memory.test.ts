@@ -29,6 +29,11 @@ class Scripted implements ChatProvider {
   }
 }
 const noSql = { run: async () => ({ columns: [], rows: [], ms: 0 }) };
+const seeded = async () => {
+  const ledger = new EvidenceLedger(noSql);
+  await ledger.run("SELECT 1", "H0", "seed");
+  return ledger;
+};
 
 test("findings are parsed per hypothesis with their evidence ids and verdicts", () => {
   const f = findingsFromState(STATE);
@@ -41,7 +46,7 @@ test("findings are parsed per hypothesis with their evidence ids and verdicts", 
 
 test("learned findings persist, are recalled for a related question, and enter chunk 1 only", async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "whybot-mem-"));
-  const first = await investigate({ question: "Why did trial signups drop 18% last week?", llm: new Scripted([`done\n[STATE_CHECKPOINT]\n${STATE}`, "Conclusion. [TASK_COMPLETE]"]), ledger: new EvidenceLedger(noSql) });
+  const first = await investigate({ question: "Why did trial signups drop 18% last week?", llm: new Scripted([`done\n[STATE_CHECKPOINT]\n${STATE}`, "Conclusion. [TASK_COMPLETE]"]), ledger: await seeded() });
   first.run.finalState = STATE;
   const written = learn(openMemory(dir), first, "run-1", "Week 2026-10-12..2026-10-18");
   assert.equal(written.length, 4);
@@ -55,7 +60,7 @@ test("learned findings persist, are recalled for a related question, and enter c
   assert.match(context, /\[MEMORY CONTEXT\][\s\S]*4\.12\.0/);
 
   const llm = new Scripted([`checked\n[STATE_CHECKPOINT]\nCOMPLETED: H1 re-verified [E1]\nREMAINING: none\nDECISIONS: none\nCONTEXT: none`, "Same cause. [TASK_COMPLETE]"]);
-  await investigate({ question: "Why did mobile trial signups fall?", llm, ledger: new EvidenceLedger(noSql), memoryContext: context });
+  await investigate({ question: "Why did mobile trial signups fall?", llm, ledger: await seeded(), memoryContext: context });
   assert.match(llm.prompts[0][1].content, /\[MEMORY CONTEXT\]/);
   assert.doesNotMatch(llm.prompts[1][1].content, /\[MEMORY CONTEXT\]/);
 });

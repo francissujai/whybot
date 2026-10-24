@@ -46,7 +46,7 @@ METHOD
 - Size every effect. A cause is SUPPORTED only if it moves the metric by a material share of the total change over the same period; a cause confined to one day cannot explain a week-long drop on its own.
 - Trace every SUPPORTED cause to a specific event: the release (version, component, time) from app_pg.release_log or the ad change (campaign, change, old -> new value, time) from ads_pg.ad_change_log. Confirm the timing with a daily series around that event. Judge each change separately; two changes on nearby days are two hypotheses, not one.
 - Quantify how much of the total change each supported cause explains, and say what is left unexplained.
-- Never state a number that is not in a result you received.
+- Never state a number that is not in a result you received in this investigation. [MEMORY CONTEXT] items are leads to re-check, never evidence.
 - When every hypothesis has a verdict and the parts add up, write a 3-5 sentence conclusion and end with [TASK_COMPLETE].
 - Be brief. Every chunk ends within 250 words of prose.
 
@@ -119,6 +119,14 @@ export function makeInvestigatorGenerator(llm: ChatProvider, ledger: EvidenceLed
     for (let round = 0; ; round++) {
       const reply = await ask();
       const blocks = [...reply.matchAll(SQL_BLOCK_G)];
+      // Evidence guard: the investigation cannot start from memory or guesses.
+      // The first step must run at least one query before it may checkpoint.
+      if (!blocks.length && ledger.items.length === 0 && round === 0) {
+        events.onGuard?.(`chunk ${chunkNo}: no query run yet, asked for the H0 query`);
+        messages.push({ role: "assistant", content: reply.slice(0, 1500) });
+        messages.push({ role: "user", content: "No query has run yet. Numbers from memory or prior knowledge are not evidence. Write the H0 <sql> block now that measures the change." });
+        continue;
+      }
       if (!blocks.length || used >= MAX_QUERIES_PER_CHUNK) {
         final = blocks.length ? reply.slice(0, blocks[0].index).trim() : reply;
         break;

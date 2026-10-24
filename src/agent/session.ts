@@ -80,7 +80,8 @@ export async function runSession(question: string, opts: { useMemory?: boolean; 
   const report = await writeReport(inv, llm.as("report"));
   const check = checkCitations(report, ledger.items);
   const w = asOf();
-  const written = mem ? learn(mem, inv, runId, `Week ${w.lastWeek[0]}..${w.lastWeek[1]}`) : [];
+  // Only a completed investigation teaches memory; a failed one may stop mid-hypothesis.
+  const written = mem && inv.run.status === "completed" ? learn(mem, inv, runId, `Week ${w.lastWeek[0]}..${w.lastWeek[1]}`) : [];
   fs.writeFileSync(path.join(dir, "report.md"), `# ${question}\n\n${report}\n`);
   fs.writeFileSync(path.join(dir, "report.html"), renderHtml(inv, report, check, { provider: llm.name, model: llm.model, recalled, written, receipts: llm.summary() }));
   save();
