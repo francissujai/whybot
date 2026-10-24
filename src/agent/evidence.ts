@@ -4,6 +4,7 @@
 
 import type { SqlRunner } from "../zetaris/client.ts";
 import { lintSql } from "../zetaris/lint.ts";
+import { PREVIEW_ROWS } from "./budget.ts";
 
 export interface Evidence {
   id: string;
@@ -18,7 +19,6 @@ export interface Evidence {
   error?: string;
 }
 
-const PREVIEW_ROWS = 25;
 
 export class EvidenceLedger {
   readonly items: Evidence[] = [];

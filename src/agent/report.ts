@@ -7,6 +7,7 @@ import { runEfficiency } from "../engines/markovian/index.ts";
 import { fmt, type Evidence } from "./evidence.ts";
 import type { Investigation } from "./investigator.ts";
 import type { MemoryRecord } from "../engines/hmem/index.ts";
+import { outputBudget, REPORT_EVIDENCE_ROWS, REPORT_NOTE_CHARS } from "./budget.ts";
 
 export interface CitationCheck {
   cited: string[];
@@ -19,7 +20,7 @@ export async function writeReport(inv: Investigation, llm: ChatProvider): Promis
   const evidenceIndex = inv.ledger.items
     .map((e) => {
       if (e.error) return `[${e.id}] ${e.hypothesis} ${e.purpose}: QUERY FAILED`;
-      const head = [e.columns.join(","), ...e.rows.slice(0, 12).map((r) => r.map(fmt).join(","))].join("\n  ");
+      const head = [e.columns.join(","), ...e.rows.slice(0, REPORT_EVIDENCE_ROWS).map((r) => r.map(fmt).join(","))].join("\n  ");
       return `[${e.id}] ${e.hypothesis} ${e.purpose} (${e.rowCount} rows)\n  ${head}`;
     })
     .join("\n");
@@ -29,7 +30,7 @@ Final investigation state:
 ${inv.run.finalState}
 
 Investigation notes, step by step:
-${inv.run.chunks.map((c) => `--- step ${c.id}\n${c.content.replace(/<sql[\s\S]*?(<\/sql>|$)/gi, "").trim().slice(0, 700)}`).join("\n")}
+${inv.run.chunks.map((c) => `--- step ${c.id}\n${c.content.replace(/<sql[\s\S]*?(<\/sql>|$)/gi, "").trim().slice(0, REPORT_NOTE_CHARS)}`).join("\n")}
 
 Evidence (id, hypothesis, purpose, rows):
 ${evidenceIndex}
@@ -53,7 +54,7 @@ Rules: name the specific event behind each cause (release version and time, or c
   ];
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const r = await llm.chat(messages, { maxTokens: 4000, temperature: 0.1 });
+      const r = await llm.chat(messages, { maxTokens: outputBudget(messages, 4000), temperature: 0.1 });
       if (r.text.trim()) return r.text.trim();
     } catch {
       await new Promise((res) => setTimeout(res, 15_000));

@@ -13,8 +13,9 @@ import type { ChunkInfo, Generator, MarkovianRun, Usage } from "../engines/marko
 import type { ChatMessage, ChatProvider } from "../llm/meterless.ts";
 import { asOf, CATALOG, SQL_RULES } from "./catalog.ts";
 import { EvidenceLedger } from "./evidence.ts";
+import { fitMessages, MAX_QUERIES_PER_CHUNK, outputBudget } from "./budget.ts";
 
-export const MAX_QUERIES_PER_CHUNK = 3;
+export { MAX_QUERIES_PER_CHUNK } from "./budget.ts";
 /** State compression is short and mechanical: route it to the lowest-latency lane. */
 export const COMPRESSOR_MODEL = "meterless/fast";
 
@@ -95,12 +96,12 @@ export function makeInvestigatorGenerator(llm: ChatProvider, ledger: EvidenceLed
     const ask = async () => {
       let r;
       try {
-        r = await llm.chat(messages, { maxTokens: 5000, signal });
+        r = await llm.chat(fitMessages(messages), { maxTokens: outputBudget(fitMessages(messages)), signal });
       } catch (err) {
         // One more try after a pause; the provider already retried transient errors.
         if (signal?.aborted) throw err;
         await new Promise((res) => setTimeout(res, 15_000));
-        r = await llm.chat(messages, { maxTokens: 5000, signal });
+        r = await llm.chat(fitMessages(messages), { maxTokens: outputBudget(fitMessages(messages)), signal });
       }
       if (r.usage) {
         usage.promptTokens += r.usage.promptTokens;
