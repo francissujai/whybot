@@ -109,10 +109,31 @@ $("go").onclick = async () => {
 };
 async function loadRuns() {
   const s = await (await fetch("/api/status")).json();
-  $("runs").replaceChildren(...s.runs.map((r) => { const a = document.createElement("a"); a.href = "/runs/" + r.runId + "/report.html"; a.target = "_blank"; a.textContent = r.question; const sm = document.createElement("small"); sm.textContent = r.runId.replace("T", " ").slice(0, 16) + " UTC"; a.append(sm); return a; }));
+  $("runs").replaceChildren(...s.runs.map((r) => { const a = document.createElement("a"); a.href = "/runs/" + r.runId + "/report.html"; a.target = "_blank"; a.textContent = r.question; const sm = document.createElement("small"); sm.textContent = r.runId.replace("T", " ").slice(0, 16) + " UTC"; a.append(sm); if (r.replay) { const rp = document.createElement("a"); rp.href = "/replay/" + r.runId; rp.textContent = "replay"; rp.style.cssText = "display:inline;border:0;padding:0;margin-left:6px;font-size:11.5px;color:var(--accent)"; rp.onclick = (ev) => ev.stopPropagation(); sm.append(" ", rp); } return a; }));
   if (!s.runs.length) $("runs").textContent = "None yet.";
   if (s.running && !$("go").disabled) { $("q").value = s.running.question; setBusy(true, "Following a running investigation"); follow(s.running.id); }
 }
 loadRuns();
+
+// Replay: /replay/<runId>?speed=10 plays a saved run's events with their real timing, sped up.
+// (No backslashes here: this script lives inside a template literal.)
+if (location.pathname.startsWith("/replay/")) startReplay(location.pathname.slice("/replay/".length));
+async function startReplay(runId) {
+  const speed = Number(new URLSearchParams(location.search).get("speed")) || 10;
+  const r = await fetch("/runs/" + runId + "/events.jsonl");
+  if (!r.ok) { el("error", ["No saved events for run " + runId + "."]); return; }
+  const items = (await r.text()).split(String.fromCharCode(10)).filter(Boolean).map((l) => JSON.parse(l));
+  const total = items.length ? items[items.length - 1].t : 0;
+  const start = items.find((i) => i.e.type === "start");
+  if (start) $("q").value = start.e.question;
+  $("go").disabled = true;
+  const banner = document.createElement("div"); banner.className = "ev call";
+  banner.textContent = "Replay of run " + runId + " at " + speed + "x. Original run took " + Math.round(total / 60000) + " min; timings below are real.";
+  $("timeline").before(banner);
+  const wall = Date.now();
+  clearInterval(tick);
+  tick = setInterval(() => { const t = Math.min(total, (Date.now() - wall) * speed); $("timer").textContent = "original time " + Math.floor(t / 60000) + ":" + String(Math.floor(t / 1000) % 60).padStart(2, "0"); }, 250);
+  for (const it of items) setTimeout(() => { render(it.e); if (it.e.type === "done") { clearInterval(tick); $("go").disabled = true; } }, it.t / speed);
+}
 </script>
 </body></html>`;

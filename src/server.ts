@@ -94,6 +94,17 @@ const server = http.createServer(async (req, res) => {
       });
       return;
     }
+    const ev2 = url.pathname.match(/^\/runs\/([\dT-]{19})\/events\.jsonl$/);
+    if (req.method === "GET" && ev2) {
+      const file = path.join(RUNS_DIR, ev2[1], "events.jsonl");
+      if (!fs.existsSync(file)) return json(res, 404, { error: "no saved events for this run" });
+      res.writeHead(200, { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" });
+      return fs.createReadStream(file).pipe(res);
+    }
+    if (req.method === "GET" && /^\/replay\/[\dT-]{19}$/.test(url.pathname)) {
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+      return res.end(PAGE);
+    }
     const rep = url.pathname.match(/^\/runs\/([\dT-]{19})\/report\.html$/);
     if (req.method === "GET" && rep) {
       const file = path.join(RUNS_DIR, rep[1], "report.html");

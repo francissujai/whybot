@@ -13,7 +13,7 @@ import type { ChunkInfo, Generator, MarkovianRun, Usage } from "../engines/marko
 import type { ChatMessage, ChatProvider } from "../llm/meterless.ts";
 import { asOf, CATALOG, SQL_RULES } from "./catalog.ts";
 import { EvidenceLedger } from "./evidence.ts";
-import { fitMessages, MAX_QUERIES_PER_CHUNK, outputBudget } from "./budget.ts";
+import { calibrate, fitMessages, MAX_QUERIES_PER_CHUNK, outputBudget } from "./budget.ts";
 
 export { MAX_QUERIES_PER_CHUNK } from "./budget.ts";
 /** State compression model; defaults to the main lane (NEMOTRON_MODEL). */
@@ -96,13 +96,16 @@ export function makeInvestigatorGenerator(llm: ChatProvider, ledger: EvidenceLed
     const ask = async () => {
       let r;
       try {
-        r = await llm.chat(fitMessages(messages), { maxTokens: outputBudget(fitMessages(messages)), signal });
+        const fitted = fitMessages(messages);
+        r = await llm.chat(fitted, { maxTokens: outputBudget(fitted), signal });
       } catch (err) {
         // One more try after a pause; the provider already retried transient errors.
         if (signal?.aborted) throw err;
         await new Promise((res) => setTimeout(res, 15_000));
-        r = await llm.chat(fitMessages(messages), { maxTokens: outputBudget(fitMessages(messages)), signal });
+        const fitted = fitMessages(messages);
+        r = await llm.chat(fitted, { maxTokens: outputBudget(fitted), signal });
       }
+      if (r.usage) calibrate(fitMessages(messages), r.usage.promptTokens);
       if (r.usage) {
         usage.promptTokens += r.usage.promptTokens;
         usage.completionTokens += r.usage.completionTokens;
@@ -130,8 +133,9 @@ export function makeInvestigatorGenerator(llm: ChatProvider, ledger: EvidenceLed
         previews.push(EvidenceLedger.preview(ev));
       }
       used += take.length;
-      const last = take.at(-1)!;
-      messages.push({ role: "assistant", content: reply.slice(0, last.index! + last[0].length) });
+      // Carry back only the queries, not the model's prose around them: it adds
+      // tokens and nothing the next call needs.
+      messages.push({ role: "assistant", content: take.map((b) => b[0]).join("\n") });
       const failed = previews.some((p) => p.includes('error="true"'));
       const next =
         used >= MAX_QUERIES_PER_CHUNK || !failed

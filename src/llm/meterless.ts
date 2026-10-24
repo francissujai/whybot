@@ -40,7 +40,9 @@ export interface ChatProvider {
 }
 
 const AUTO_PORTS = [8088, 8090, 8787, 11434];
-const TIMEOUT_MS = 180_000;
+// The contract's 180 s suits cloud lanes; a local GPU lane writing 4-5k
+// tokens at ~26 tok/s needs longer. WHYBOT_CALL_TIMEOUT_S overrides it.
+const TIMEOUT_MS = (Number(process.env.WHYBOT_CALL_TIMEOUT_S) || 180) * 1000;
 const RETRY_WAITS = [2000, 4000, 8000];
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

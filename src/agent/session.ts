@@ -27,7 +27,13 @@ export type SessionEvent =
   | { type: "error"; message: string };
 
 export async function runSession(question: string, opts: { useMemory?: boolean; onEvent?: (e: SessionEvent) => void } = {}) {
-  const emit = (e: SessionEvent) => opts.onEvent?.(e);
+  const t0 = Date.now();
+  let eventsFile = "";
+  // Every event is also saved with its time offset, so a run can be replayed later (UI: /replay/<runId>).
+  const emit = (e: SessionEvent) => {
+    if (eventsFile) fs.appendFileSync(eventsFile, JSON.stringify({ t: Date.now() - t0, e }) + "\n");
+    opts.onEvent?.(e);
+  };
   const llm = new ReceiptLog(new MeterlessProvider());
   llm.onCall = (c) =>
     emit({ type: "call", purpose: c.purpose, seconds: c.ms / 1000, model: c.route?.label, kind: c.route?.kind, tokensIn: c.usage?.promptTokens, tokensOut: c.usage?.completionTokens, error: c.error });
@@ -36,6 +42,7 @@ export async function runSession(question: string, opts: { useMemory?: boolean; 
   const dir = path.join(RUNS_DIR, runId);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "question.txt"), question);
+  eventsFile = path.join(dir, "events.jsonl");
   emit({ type: "start", runId, question, model: llm.model, provider: llm.name });
 
   const mem = opts.useMemory === false ? undefined : openMemory();
@@ -83,7 +90,7 @@ export async function runSession(question: string, opts: { useMemory?: boolean; 
 }
 
 /** Past runs that produced a report, newest first. */
-export function listRuns(): { runId: string; question: string }[] {
+export function listRuns(): { runId: string; question: string; replay: boolean }[] {
   if (!fs.existsSync(RUNS_DIR)) return [];
   return fs
     .readdirSync(RUNS_DIR)
@@ -94,6 +101,6 @@ export function listRuns(): { runId: string; question: string }[] {
       const q = path.join(RUNS_DIR, runId, "question.txt");
       const md = path.join(RUNS_DIR, runId, "report.md");
       const question = fs.existsSync(q) ? fs.readFileSync(q, "utf-8") : (fs.readFileSync(md, "utf-8").match(/^# (.+)$/m)?.[1] ?? runId);
-      return { runId, question };
+      return { runId, question, replay: fs.existsSync(path.join(RUNS_DIR, runId, "events.jsonl")) };
     });
 }
