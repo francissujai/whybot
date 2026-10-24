@@ -77,7 +77,9 @@ function setBusy(busy, text) {
 }
 function render(e) {
   switch (e.type) {
-    case "start": setBusy(true, "Investigating with " + e.model + " via " + e.provider); break;
+    case "start":
+      if (location.pathname.startsWith("/replay/")) { $("status").textContent = "Replaying: investigated with " + e.model + " via " + e.provider; break; }
+      setBusy(true, "Investigating with " + e.model + " via " + e.provider); break;
     case "memory": el("step", [{ cls: "k", text: "Memory" }, e.recalled.length ? "Recalled " + e.recalled.length + " findings from earlier investigations." : "Nothing relevant in memory yet."]); break;
     case "call": el("call", [e.error ? "Model call failed after " + e.seconds.toFixed(0) + " s, retrying" : (e.purpose === "report" ? "Report written by " : "Answered by ") + (e.model || "?") + " (" + (e.kind || "?") + ") in " + e.seconds.toFixed(0) + " s"]); break;
     case "query": el("query", [{ cls: "eid", text: e.id }, { cls: "k", text: e.hypothesis }, e.purpose + (e.error ? " - query rejected or failed, the model will fix it" : " - " + e.rows + " rows from Zetaris")]); break;
