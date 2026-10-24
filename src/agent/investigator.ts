@@ -16,8 +16,8 @@ import { EvidenceLedger } from "./evidence.ts";
 import { fitMessages, MAX_QUERIES_PER_CHUNK, outputBudget } from "./budget.ts";
 
 export { MAX_QUERIES_PER_CHUNK } from "./budget.ts";
-/** State compression is short and mechanical: route it to the lowest-latency lane. */
-export const COMPRESSOR_MODEL = "meterless/fast";
+/** State compression model; defaults to the main lane (NEMOTRON_MODEL). */
+export const COMPRESSOR_MODEL = process.env.WHYBOT_COMPRESSOR_MODEL?.trim() || undefined;
 
 export function systemPrompt(): string {
   const w = asOf();
