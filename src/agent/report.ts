@@ -52,12 +52,14 @@ Rules: name the specific event behind each cause (release version and time, or c
     { role: "system" as const, content: "You are WhyBot's report writer. Precise, plain English, no hype. Every number is cited." },
     { role: "user" as const, content: prompt },
   ];
-  for (let attempt = 0; attempt < 2; attempt++) {
+  const attempts = 2;
+  for (let attempt = 0; attempt < attempts; attempt++) {
     try {
       const r = await llm.chat(messages, { maxTokens: outputBudget(messages, 4000), temperature: 0.1 });
       if (r.text.trim()) return r.text.trim();
     } catch {
-      await new Promise((res) => setTimeout(res, 15_000));
+      // Back off before retrying; after the last attempt go straight to the fallback.
+      if (attempt < attempts - 1) await new Promise((res) => setTimeout(res, 15_000));
     }
   }
   return fallbackReport(inv);

@@ -26,7 +26,8 @@ The question is "Why did trial signups drop 18% last week?". WhyBot:
    - **Ruled out:** Thanksgiving (Mon 12 Oct, read from the live canada-holidays.ca API) caused a one-day dip only. Pricing hasn't changed since 1 June. The social creative swap on 14 Oct had no measurable effect.
 4. **Writes a report** with a decomposition table and owners for each action. A citation checker flags any number that lacks evidence.
 
-The dataset is synthetic but realistic. It is generated deterministically by `scripts/generate-data.ts` with the causes planted, so the right answer is known and the agent can be scored against it.
+The dataset is synthetic but realistic. It is generated deterministically by `web/                        the UI: React + Vite + motion (see DESIGN.md), built to web/dist
+scripts/generate-data.ts` with the causes planted, so the right answer is known and the agent can be scored against it.
 
 ## How it works
 
@@ -67,7 +68,18 @@ npm run conformance     # Markovian 8/8, H-MEM 13/13; scorecards saved to confor
 
 ## Run it
 
-Prerequisites: the machine setup in [docs/SETUP.md](docs/SETUP.md), meaning Docker Desktop, Zetaris running locally, Meterless Nightshift with Nemotron lanes, and Node 20+.
+### Prerequisites
+
+| Tool | Version | Needed for |
+|---|---|---|
+| Node.js | 20+ (tested on 24.12) with npm 10+ | everything |
+| Docker Desktop | current | demo Postgres (`npm run data:up`) and Zetaris |
+| Zetaris | local Docker install from Zetaris Cloud | running an investigation |
+| Meterless Nightshift | with a Nemotron lane | running an investigation |
+
+[docs/SETUP.md](docs/SETUP.md) walks through the machine setup. Without Zetaris and Nightshift, the web UI loads and lists saved runs, and `npm test`, `npm run typecheck` and `npm run conformance` still run.
+
+### Setup
 
 ```powershell
 npm install
@@ -81,10 +93,22 @@ cd ..
 
 copy .env.example .env                  # then fill in ZETARIS_API_KEY, MODEL_API_KEY (Nightshift Console)
 npm run check                           # Power and Data checks: every line should PASS
-npm run why -- "Why did trial signups drop 18% last week?"
 ```
 
-Or use the web UI: `npm run serve` and open http://127.0.0.1:4173 to ask a question, watch each step stream in, and open the report.
+### Run
+
+```powershell
+npm run web:install                     # once: install the UI's packages (web/)
+npm run dev                             # data:up + build the UI + serve
+```
+
+Open **http://127.0.0.1:4173** for the landing page, then **Open the app** (`/app`) to ask a question and watch the case build: hypotheses move from "Evidence gathered" to Confirmed, Measurement, or Ruled out as the queries come back, and the finding cites each query by id. **Archive** lists past runs; **Replay** plays one back with its original timing and a scrubber; **Ctrl K** opens search; **Auto / Light / Dark** switches the theme. Zetaris and Nightshift must already be running. To start only the web server: `npm run serve` (it serves the UI built into `web/dist`; if that folder is missing it falls back to the original single-page UI). After changing files in `web/src`, run `npm run web:build`, or use `npm --prefix web run dev` for hot reload on :5173 (it proxies the API to :4173).
+
+From the command line instead:
+
+```powershell
+npm run why -- "Why did trial signups drop 18% last week?"
+```
 
 Each run writes `runs/<timestamp>/` containing `report.html` (open it in a browser), `report.md`, `evidence.json` (every SQL statement and its rows) and `run.json` (the Markovian run record).
 
@@ -107,7 +131,7 @@ npm run memory -- list
 ```
 src/
   cli.ts                     npm run why | check | memory
-  server.ts, ui/page.ts      npm run serve: web UI with live progress (127.0.0.1:4173)
+  server.ts, ui/page.ts      npm run serve: API and web server (127.0.0.1:4173); ui/page.ts is the fallback page
   agent/session.ts           one investigation end to end, shared by CLI and UI
   agent/investigator.ts      Markovian-powered investigation loop with the SQL tool
   agent/evidence.ts          evidence ledger (E1, E2, ...)
@@ -129,7 +153,9 @@ docs/SETUP.md                machine setup checklist
 ## Tests
 
 ```
-npm test            # offline: investigation loop, SQL guard, citations, memory
+npm test            # offline: investigation loop, SQL guard, citations, memory, case model
 npm run typecheck
 npm run conformance
+npm run web:build   # type-check and build the UI (web/)
+npm run smoke       # HTTP smoke tests against a running server
 ```
