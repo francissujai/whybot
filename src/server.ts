@@ -11,9 +11,26 @@
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
-import { env } from "./env.ts";
+import { env, ROOT } from "./env.ts";
 import { listRuns, RUNS_DIR, runSession, type SessionEvent } from "./agent/session.ts";
 import { PAGE } from "./ui/page.ts";
+
+// The React UI (web/, built with `npm run web:build`). Without a build the original single-page UI is served.
+const WEB_DIST = path.join(ROOT, "web", "dist");
+const MIME: Record<string, string> = { ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".woff": "font/woff", ".json": "application/json" };
+const appHtml = (): string | Buffer => {
+  const f = path.join(WEB_DIST, "index.html");
+  return fs.existsSync(f) ? fs.readFileSync(f) : PAGE;
+};
+/** Built assets only: /assets/<name> and /favicon.svg, never a path that leaves web/dist. */
+function serveAsset(res: http.ServerResponse, pathname: string): boolean {
+  if (!/^\/(assets\/\w[\w.-]*|favicon\.svg)$/.test(pathname)) return false;
+  const file = path.join(WEB_DIST, pathname);
+  if (!file.startsWith(WEB_DIST + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) return false;
+  res.writeHead(200, { "Content-Type": MIME[path.extname(file)] ?? "application/octet-stream", "Cache-Control": "public, max-age=3600" });
+  fs.createReadStream(file).pipe(res);
+  return true;
+}
 
 const HOST = env("WHYBOT_HOST", "127.0.0.1");
 const PORT = Number(env("WHYBOT_PORT", "4173"));
@@ -65,10 +82,11 @@ async function readBody(req: http.IncomingMessage): Promise<string> {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
   try {
-    if (req.method === "GET" && url.pathname === "/") {
+    if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/app" || url.pathname === "/app/")) {
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
-      return res.end(PAGE);
+      return res.end(appHtml());
     }
+    if (req.method === "GET" && serveAsset(res, url.pathname)) return;
     if (req.method === "GET" && url.pathname === "/api/status") {
       return json(res, 200, { running: running ? { id: running.id, question: running.question } : null, runs: listRuns().slice(0, 20) });
     }
@@ -101,9 +119,9 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" });
       return fs.createReadStream(file).pipe(res);
     }
-    if (req.method === "GET" && /^\/replay\/[\dT-]{19}$/.test(url.pathname)) {
+    if (req.method === "GET" && /^\/replay\/[\dT-]{19}\/?$/.test(url.pathname)) {
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
-      return res.end(PAGE);
+      return res.end(appHtml());
     }
     const rep = url.pathname.match(/^\/runs\/([\dT-]{19})\/report\.html$/);
     if (req.method === "GET" && rep) {

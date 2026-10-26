@@ -1,0 +1,74 @@
+/* Design foundation (see DESIGN.md): gray ramp, paper, type scale, spacing, radii and motion.
+   The accent block sets the product colour. Dark is the base theme; Auto follows the OS, and data-theme on <html> overrides it. */
+
+@import "@fontsource-variable/inter";
+
+:root {
+  --ds-black: #000000; --ds-ink: #06080C; --ds-gray-600: #111111; --ds-gray-525: #1F1F1F; --ds-gray-500: #282828;
+  --ds-gray-400: #595959; --ds-gray-300: #969696; --ds-gray-250: #A3A3A3; --ds-gray-200: #D9D9D9; --ds-gray-100: #F2F2F2;
+  --ds-paper: #F2EDE6; --ds-white: #FFFFFF;
+
+  --ds-font: "Inter Variable", Inter, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ds-code: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", Menlo, Consolas, monospace;
+  --ds-t-display: 72px; --ds-lh-display: 1; --ds-ls-display: -0.03em;
+  --ds-t-title: 32px; --ds-lh-title: 1.1; --ds-ls-title: -0.03em;
+  --ds-t-eyebrow: 14px; --ds-ls-eyebrow: 0.12em;
+  --ds-t-body: 16px; --ds-lh-body: 24px;
+  --ds-t-button: 15px; --ds-lh-button: 20px; --ds-ls-button: 0.3px;
+
+  --ds-section-y: 128px; --ds-section-x: 80px; --ds-container: 1440px;
+  --ds-r-button: 8px; --ds-r-pill: 100px; --ds-r-card: 6px; --ds-r-panel: 20px;
+
+  /* breakpoints used in media queries: 768, 1009, 1440 (375 is the base) */
+  --ds-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ds-ease-app: cubic-bezier(0.2, 0, 0.2, 1);
+  --ds-dur-hover: 150ms; --ds-dur-app: 200ms; --ds-dur-panel: 250ms; --ds-dur-word: 350ms; --ds-dur-entry: 600ms;
+  --ds-accent: #FFE14D; --ds-accent-hover: #FFD91A; --ds-accent-border: rgba(255, 225, 77, 0.5); --ds-on-accent: #06080C;
+  --ds-object-accent: #FFE14D;  /* hero objects always sit on a dark disc */
+}
+
+:root, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --ds-bg: #000000; --ds-surface-1: #111111; --ds-surface-2: #1F1F1F; --ds-surface-3: #282828; --ds-raised: #282828;
+  --ds-text: #FFFFFF; --ds-text-2: #969696; --ds-text-3: #595959;
+  --ds-line: #282828; --ds-line-strong: #595959;
+  --ds-fill: rgba(255, 255, 255, 0.06); --ds-fill-2: rgba(255, 255, 255, 0.12);
+  --ds-nav: rgba(22, 22, 23, 0.8); --ds-pill: rgba(255, 255, 255, 0.15);
+  --ds-scrim: rgba(0, 0, 0, 0.6); --ds-shadow-1: none; --ds-shadow-pop: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --ds-success: #3DD68C; --ds-success-bg: rgba(61, 214, 140, 0.14);
+  --ds-warn: #E8B04A; --ds-warn-bg: rgba(232, 176, 74, 0.14);
+  --ds-danger: #FF6B6B; --ds-danger-bg: rgba(255, 107, 107, 0.14);
+  --ds-info: #8FB8E8; --ds-info-bg: rgba(143, 184, 232, 0.14);
+  --ds-accent-text: #FFE14D; --ds-accent-soft: rgba(255, 225, 77, 0.22);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ds-bg: #F2EDE6; --ds-surface-1: #FFFFFF; --ds-surface-2: #F2F2F2; --ds-surface-3: #D9D9D9; --ds-raised: #FFFFFF;
+  --ds-text: #06080C; --ds-text-2: #595959; --ds-text-3: #A3A3A3;
+  --ds-line: #D9D9D9; --ds-line-strong: #A3A3A3;
+  --ds-fill: rgba(6, 8, 12, 0.05); --ds-fill-2: rgba(6, 8, 12, 0.1);
+  --ds-nav: rgba(255, 255, 255, 0.8); --ds-pill: rgba(6, 8, 12, 0.08);
+  --ds-scrim: rgba(6, 8, 12, 0.4); --ds-shadow-1: 0 1px 2px rgba(6, 8, 12, 0.06); --ds-shadow-pop: 0 12px 32px rgba(6, 8, 12, 0.14);
+  --ds-success: #006B28; --ds-success-bg: rgba(0, 128, 48, 0.1);
+  --ds-warn: #8A5300; --ds-warn-bg: rgba(200, 120, 0, 0.12);
+  --ds-danger: #B80000; --ds-danger-bg: rgba(224, 0, 0, 0.08);
+  --ds-info: #1F5F8B; --ds-info-bg: rgba(31, 95, 139, 0.1);
+  --ds-accent-text: #06080C; --ds-accent-soft: rgba(255, 225, 77, 0.45);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+  color-scheme: light;
+  --ds-bg: #F2EDE6; --ds-surface-1: #FFFFFF; --ds-surface-2: #F2F2F2; --ds-surface-3: #D9D9D9; --ds-raised: #FFFFFF;
+  --ds-text: #06080C; --ds-text-2: #595959; --ds-text-3: #A3A3A3;
+  --ds-line: #D9D9D9; --ds-line-strong: #A3A3A3;
+  --ds-fill: rgba(6, 8, 12, 0.05); --ds-fill-2: rgba(6, 8, 12, 0.1);
+  --ds-nav: rgba(255, 255, 255, 0.8); --ds-pill: rgba(6, 8, 12, 0.08);
+  --ds-scrim: rgba(6, 8, 12, 0.4); --ds-shadow-1: 0 1px 2px rgba(6, 8, 12, 0.06); --ds-shadow-pop: 0 12px 32px rgba(6, 8, 12, 0.14);
+  --ds-success: #006B28; --ds-success-bg: rgba(0, 128, 48, 0.1);
+  --ds-warn: #8A5300; --ds-warn-bg: rgba(200, 120, 0, 0.12);
+  --ds-danger: #B80000; --ds-danger-bg: rgba(224, 0, 0, 0.08);
+  --ds-info: #1F5F8B; --ds-info-bg: rgba(31, 95, 139, 0.1);
+  --ds-accent-text: #06080C; --ds-accent-soft: rgba(255, 225, 77, 0.45);
+  }
+}

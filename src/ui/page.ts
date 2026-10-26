@@ -4,6 +4,7 @@
 export const PAGE = /* html */ `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WhyBot · why did the number move?</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6bcb'/%3E%3Ctext x='16' y='23' font-family='system-ui,sans-serif' font-size='19' font-weight='700' fill='white' text-anchor='middle'%3E%3F%3C/text%3E%3C/svg%3E">
 <style>
 :root{--ink:#16181d;--muted:#667085;--line:#e4e7ec;--bg:#fbfbfa;--card:#fff;--accent:#0b6bcb;--accent-soft:#eaf2fb;--warn:#b54708;--warn-soft:#fffaeb;--ok:#067647;--ok-soft:#ecfdf3;--bad:#b42318}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -33,6 +34,15 @@ pre.state{white-space:pre-wrap;margin:8px 0 0;font:12.5px/1.5 ui-monospace,SFMon
 .runs{display:flex;flex-direction:column;gap:6px}.runs a{display:block;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);text-decoration:none;font-size:13.5px}
 .runs a:hover{border-color:var(--accent)}.runs small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
 .note{font-size:12.5px;color:var(--muted);margin-top:18px;line-height:1.5}
+.ask:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.run{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13.5px}
+.run .q{color:var(--ink);font-weight:500}.run small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.run .acts{display:flex;gap:10px;margin-top:6px;font-size:12.5px}.run .acts a{color:var(--accent);text-decoration:none;font-weight:600}
+.run .acts a:hover{text-decoration:underline}
+details.state{margin-top:6px}details.state summary{cursor:pointer;color:var(--muted);font-size:12.5px}
+.speed{display:inline-flex;gap:4px;margin-left:8px}.speed a{font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--ink);text-decoration:none;background:var(--card)}
+.speed a[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 </style></head><body>
 <div class="wrap">
 <main>
@@ -40,7 +50,7 @@ pre.state{white-space:pre-wrap;margin:8px 0 0;font:12.5px/1.5 ui-monospace,SFMon
   <p class="tag">Ask why a metric moved. WhyBot tests competing explanations across your data and cites the evidence for every number.</p>
   <div class="stack"><span class="chip">Data: Zetaris (3 federated sources)</span><span class="chip">Engines: Meterless Markovian + H-MEM</span><span class="chip">Model: NVIDIA Nemotron via Nightshift</span></div>
   <div class="ask">
-    <textarea id="q" maxlength="300" placeholder="Why did trial signups drop 18% last week?"></textarea>
+    <textarea id="q" maxlength="300" aria-label="Your question" placeholder="Why did trial signups drop 18% last week?"></textarea>
     <div class="row">
       <div class="examples" id="examples"></div>
       <button class="go" id="go">Investigate</button>
@@ -62,13 +72,14 @@ const EXAMPLES = ["Why did trial signups drop 18% last week?", "Why did mobile t
 for (const ex of EXAMPLES) { const b = document.createElement("button"); b.className = "ex"; b.textContent = ex; b.onclick = () => { $("q").value = ex; $("q").focus(); }; $("examples").append(b); }
 
 let started = 0, tick;
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function el(cls, parts) {
   const d = document.createElement("div"); d.className = "ev " + cls;
   for (const p of parts) {
     if (typeof p === "string") d.append(document.createTextNode(p));
     else { const s = document.createElement(p.tag || "span"); if (p.cls) s.className = p.cls; s.textContent = p.text; d.append(s); }
   }
-  $("timeline").append(d); d.scrollIntoView({ block: "nearest", behavior: "smooth" }); return d;
+  $("timeline").append(d); d.scrollIntoView({ block: "nearest", behavior: REDUCED ? "auto" : "smooth" }); return d;
 }
 function setBusy(busy, text) {
   $("go").disabled = busy; $("status").textContent = text;
@@ -84,9 +95,11 @@ function render(e) {
     case "call": el("call", [e.error ? "Model call failed after " + e.seconds.toFixed(0) + " s, retrying" : (e.purpose === "report" ? "Report written by " : "Answered by ") + (e.model || "?") + " (" + (e.kind || "?") + ") in " + e.seconds.toFixed(0) + " s"]); break;
     case "query": el("query", [{ cls: "eid", text: e.id }, { cls: "k", text: e.hypothesis }, e.purpose + (e.error ? " - query rejected or failed, the model will fix it" : " - " + e.rows + " rows from Zetaris")]); break;
     case "guard": el("guard", [{ cls: "k", text: "Guard" }, e.message]); break;
-    case "step": { const d = el("step", [{ cls: "k", text: "Step " + e.step }, "State carried to the next step (Markovian)"]); const pre = document.createElement("pre"); pre.className = "state"; pre.textContent = e.state; d.append(pre); break; }
+    case "step": { const d = el("step", [{ cls: "k", text: "Step " + e.step }, "Finished; only a compact state carries to the next step (Markovian)"]);
+      const det = document.createElement("details"); det.className = "state"; const sum = document.createElement("summary"); sum.textContent = "Show the state carried to the next step";
+      const pre = document.createElement("pre"); pre.className = "state"; pre.textContent = e.state; det.append(sum, pre); d.append(det); break; }
     case "report": el("done", [{ cls: "k", text: "Report" }, "Citations: " + e.cited + " evidence ids cited, " + e.unknown + " unknown, " + e.uncited + " numbers without a citation."]); break;
-    case "error": el("error", [{ cls: "k", text: "Error" }, e.message]); break;
+    case "error": el("error", [{ cls: "k", text: "Error" }, e.message]); setBusy(false, "Stopped: see the error below"); break;
     case "done":
       setBusy(false, "Finished: " + e.status + " in " + Math.round(e.seconds) + " s, " + e.steps + " steps, " + e.queries + " queries");
       if (e.reportPath) { $("frame").src = "/runs/" + e.runId + "/report.html"; $("report").hidden = false; }
@@ -109,9 +122,20 @@ $("go").onclick = async () => {
   if (!r.ok) { setBusy(false, "Idle"); el("error", [body.error || "Could not start"]); return; }
   follow(body.job);
 };
+function link(text, href, blank) { const a = document.createElement("a"); a.textContent = text; a.href = href; if (blank) a.target = "_blank"; return a; }
 async function loadRuns() {
-  const s = await (await fetch("/api/status")).json();
-  $("runs").replaceChildren(...s.runs.map((r) => { const a = document.createElement("a"); a.href = "/runs/" + r.runId + "/report.html"; a.target = "_blank"; a.textContent = r.question; const sm = document.createElement("small"); sm.textContent = r.runId.replace("T", " ").slice(0, 16) + " UTC"; a.append(sm); if (r.replay) { const rp = document.createElement("a"); rp.href = "/replay/" + r.runId; rp.textContent = "replay"; rp.style.cssText = "display:inline;border:0;padding:0;margin-left:6px;font-size:11.5px;color:var(--accent)"; rp.onclick = (ev) => ev.stopPropagation(); sm.append(" ", rp); } return a; }));
+  let s;
+  try { s = await (await fetch("/api/status")).json(); }
+  catch { $("runs").textContent = "Could not load past investigations."; return; }
+  $("runs").replaceChildren(...s.runs.map((r) => {
+    const card = document.createElement("div"); card.className = "run";
+    const q = document.createElement("span"); q.className = "q"; q.textContent = r.question;
+    const sm = document.createElement("small"); sm.textContent = r.runId.replace("T", " ").slice(0, 16) + " UTC";
+    const acts = document.createElement("div"); acts.className = "acts";
+    acts.append(link("Report", "/runs/" + r.runId + "/report.html", true));
+    if (r.replay) acts.append(link("Replay", "/replay/" + r.runId + "?speed=10", false));
+    card.append(q, sm, acts); return card;
+  }));
   if (!s.runs.length) $("runs").textContent = "None yet.";
   if (s.running && !$("go").disabled) { $("q").value = s.running.question; setBusy(true, "Following a running investigation"); follow(s.running.id); }
 }
@@ -131,6 +155,9 @@ async function startReplay(runId) {
   $("go").disabled = true;
   const banner = document.createElement("div"); banner.className = "ev call";
   banner.textContent = "Replay of run " + runId + " at " + speed + "x. Original run took " + Math.round(total / 60000) + " min; timings below are real.";
+  const speeds = document.createElement("span"); speeds.className = "speed";
+  for (const x of [1, 4, 10]) { const a = link(x + "x", "?speed=" + x, false); if (x === speed) a.setAttribute("aria-current", "true"); speeds.append(a); }
+  banner.append(speeds);
   $("timeline").before(banner);
   const wall = Date.now();
   clearInterval(tick);

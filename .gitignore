@@ -25,3 +25,17 @@ Thumbs.db
 .idea/
 .claude/
 .cursor/
+
+# local QA artifacts
+baseline-screenshots/
+after-screenshots/
+test-results/
+playwright-report/
+
+before-revamp-screenshots/
+revamp-screenshots/
+
+# React UI (web/): dependencies and build output
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo
