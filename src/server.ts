@@ -82,7 +82,7 @@ async function readBody(req: http.IncomingMessage): Promise<string> {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
   try {
-    if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/app")) {
+    if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/app" || url.pathname === "/app/")) {
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
       return res.end(appHtml());
     }
@@ -119,7 +119,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" });
       return fs.createReadStream(file).pipe(res);
     }
-    if (req.method === "GET" && /^\/replay\/[\dT-]{19}$/.test(url.pathname)) {
+    if (req.method === "GET" && /^\/replay\/[\dT-]{19}\/?$/.test(url.pathname)) {
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
       return res.end(appHtml());
     }

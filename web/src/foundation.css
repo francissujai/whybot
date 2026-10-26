@@ -1,6 +1,5 @@
-/* Design foundation shared by OmniSmartAlloc, Ad Spend Autopilot and WhyBot (see DESIGN.md).
-   Gray ramp, paper, type scale, spacing, radii and motion come from DESIGN_REFERENCE.md; only the accent block
-   differs per product. Dark is the base theme; Auto follows the OS, and data-theme on <html> overrides it. */
+/* Design foundation (see DESIGN.md): gray ramp, paper, type scale, spacing, radii and motion.
+   The accent block sets the product colour. Dark is the base theme; Auto follows the OS, and data-theme on <html> overrides it. */
 
 @import "@fontsource-variable/inter";
 

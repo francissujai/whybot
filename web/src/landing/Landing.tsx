@@ -94,8 +94,9 @@ export function Landing({ c, open, data }: { c: LandingContent; open: (to: strin
   const [pillar, setPillar] = useState(0);
 
   // smooth, inertial scrolling for the landing page only; app screens keep native scrolling.
-  // Lenis turns itself off when the OS asks for reduced motion.
+  // Skipped when the OS asks for reduced motion.
   useEffect(() => {
+    if (reduced()) return;
     const lenis = new Lenis({ lerp: 0.085, smoothWheel: true, anchors: { offset: -88 }, autoRaf: true });
     return () => lenis.destroy();
   }, []);
