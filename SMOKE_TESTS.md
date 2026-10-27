@@ -32,10 +32,10 @@ Open http://127.0.0.1:4173 and check the browser console after each flow (expect
 | 7 | Archive | Open **Archive** | Skeleton rows while loading, then every saved run with Report, Replay, Ask again; empty state when there are none | — |
 | 8 | Search | Press Ctrl K | Palette opens with focus in the box; arrows move, Enter runs, Esc closes and returns focus | — |
 | 9 | Dark and small screens | Switch the OS to dark; resize to 375 px | Colours follow the OS; the board is one column; no horizontal scroll; Search stays on the top row | — |
-| 10 | Reduced motion | Turn on "reduce motion" in the OS | Cards jump to their lane instead of gliding; nothing else moves | a completed run |
+| 10 | Reduced motion | Enable reduce motion in the OS, reload | Nothing slides, scales or glides: screens, lists and dialogs appear with simple fades or at once; the hero is a poster; everything works | — |
 | 11 | Memory | Ask "Why did mobile trial signups fall last week?" after flow 4 | "Recalled N findings from earlier cases" under the heading | flow 4 |
 | 12 | CLI | `npm run check`, `npm run why -- "<question>"`, `npm run memory -- list` | Checks PASS; report written; memories listed | Zetaris + Nightshift |
-| 13 | Landing page | Open `/` at 1440 px and at 375 px; scroll to the end | Attached top bar gains a rule after scrolling; the headline, one sentence and **Open the app** are visible without scrolling; the product views switch on click and with the arrow keys; **Open the app** goes to `/app` without a page load; the top bar shows the wordmark, what the product is and **Open the app →** (at 375 px only the wordmark and the link); **Theme** in the footer switches Auto, Light and Dark | — |
+| 13 | Landing page | Open `/` at 1440 px and at 375 px; scroll slowly to the end, then back up | Smooth scrolling; the masthead hides going down and returns going up, with a rule and slight background once scrolled; the headline and **Open the app** show at once and the 3D object fades in over its poster; the object follows the pointer; the hero object goes dark one shard at a time as you scroll; sections fade in and rise once; the statement lights up word by word; the pinned story advances through four steps with the matching text beside it; **Open the app** goes to `/app` without a page load; **Theme** in the footer switches Auto, Light and Dark. With reduce motion on: no smooth scroll, a still poster, no reveals, and the story is a plain list | — |
 
 Flows 4–6, 10, 11 and 12 cannot run without Zetaris and Nightshift.
 
