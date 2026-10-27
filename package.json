@@ -19,10 +19,14 @@
     "data:generate": "tsx scripts/generate-data.ts",
     "data:up": "docker compose -f data/docker-compose.yml up -d",
     "data:down": "docker compose -f data/docker-compose.yml down",
+    "zetaris:usl": "tsx scripts/zetaris-usl.ts",
+    "zetaris:compare": "tsx scripts/handcoded-compare.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.1",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0"
   }

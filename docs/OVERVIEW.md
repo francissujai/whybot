@@ -68,11 +68,6 @@ A primer on the hackathon, the track, what we're building, and how each sponsor'
 | Pricing change | No change since June | Ruled out |
 | Social ad creative swap | No measurable effect | Ruled out |
 
-**Why this scores well:**
-- **Impact:** a real, daily, expensive problem with a clear user.
-- **Technical:** a federated multi-source investigation, bounded reasoning, persistent memory, and guardrails.
-- **Demo:** a crisp before-and-after story with a surprise twist (half the drop is fake).
-
 ## 5. How the sponsor tools fit
 
 ```
@@ -127,14 +122,9 @@ Meterless provides two separate things.
 ### NVIDIA Nemotron: the model
 - **What it is:** NVIDIA's open model family, built for agents and reasoning.
 - **How we use it:** all WhyBot reasoning (hypotheses, SQL, verdicts, the report) runs on Nemotron via Nightshift.
-- **The setup decision:**
-  - We first used NVIDIA's free cloud API (Nemotron 3.5 Super 120B and Lightning 30B). It was too slow through Nightshift: about 45 seconds per call, often timing out.
-  - We're moving to **Nemotron 3.5 Lightning 30B running locally** on our RTX 5070 Ti. It's faster and fully local, and the NVIDIA prize story stays intact.
-- **Prize angle:** the DGX Spark award needs Nemotron to *visibly* power a real feature. The receipts in every report prove it.
+- **Lanes:** WhyBot asks Nightshift for a routing mode (`NEMOTRON_MODEL`, for example `meterless/deep`), and Nightshift picks the Nemotron lane. The recorded runs in `samples/` were served by **Nemotron 3.5 Super VL 120B A12B** and **Nemotron 3.5 Lightning 30B A3B** on NVIDIA's API, as their compute receipts show. Cloud calls take tens of seconds each. Nightshift can also serve Nemotron from a local GPU lane; WhyBot does not change for that.
+- **Proof it is used:** every report lists the receipts: which Nemotron lane answered each call, with its token counts.
 - **Rule:** the NVIDIA API key lives **only** inside Nightshift, never in our code or `.env`.
-
-### Cursor (optional)
-- The organizers made Cursor optional; any AI coding tool is allowed.
 
 ## 6. What makes WhyBot trustworthy (talking points for the demo)
 - **Read-only:** the agent can't change any data.
@@ -154,7 +144,6 @@ Meterless provides two separate things.
 - **Compute receipt:** Nightshift's record of which model served a request, with its token counts.
 
 ## 8. Where to look
-- `docs/TEAM_UPDATE.md`: current status, in bullet points.
 - `README.md`: architecture, engine mapping, how to run.
 - `docs/SETUP.md`: machine setup.
 - `docs/ZETARIS_FINDINGS.md`: the Zetaris bug write-up.

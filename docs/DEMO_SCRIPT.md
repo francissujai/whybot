@@ -66,21 +66,7 @@ Run `npm run conformance`.
 | **Meterless Nightshift** | the only model provider, on this machine |
 | **NVIDIA Nemotron** | all the reasoning, proven by receipts |
 
-> "We also found a real **Zetaris bug**: reading the same table twice in one query silently returns wrong numbers (`docs/ZETARIS_FINDINGS.md`). WhyBot blocks those queries automatically. That makes a good story for judges."
-
-## 5. Status and asks (3 min): show `docs/TEAM_UPDATE.md`
-
-- **Done:** data, engines, agent loop, guardrails, report, tests, private repo.
-- **In progress:** local Nemotron (cloud calls take 20–45 s and some time out), and a small web UI so others can try it.
-- **Due Oct 27:**
-  - 1–4 min video
-  - deck
-  - integration write-up
-  - README polish
-- **Asks for the team:**
-  - set up per `docs/SETUP.md`
-  - pick an owner each for video, deck and write-up
-  - try other questions, for example "Why did paid search signups fall?"
+> "We also found a real **Zetaris bug**: reading the same table twice in one query silently returns wrong numbers (`docs/ZETARIS_FINDINGS.md`). WhyBot blocks those queries automatically."
 
 ---
 

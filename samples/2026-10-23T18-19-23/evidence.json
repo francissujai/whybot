@@ -1,0 +1,469 @@
+[
+  {
+    "id": "E1",
+    "hypothesis": "H0",
+    "purpose": "mobile signups dashboard vs backend by week",
+    "sql": "WITH dash AS (\n  SELECT device,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS prior_signups,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS last_signups\n  FROM app_pg.trial_signups_daily\n  WHERE device = 'mobile'\n  GROUP BY device\n),\nbackend AS (\n  SELECT device,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS prior_signups,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS last_signups\n  FROM app_pg.accounts\n  WHERE device = 'mobile'\n  GROUP BY device\n)\nSELECT COALESCE(d.device, b.device) AS device,\n       d.prior_signups AS dashboard_prior,\n       d.last_signups AS dashboard_last,\n       b.prior_signups AS backend_prior,\n       b.last_signups AS backend_last,\n       ROUND(100.0 * (d.last_signups - d.prior_signups) / NULLIF(d.prior_signups, 0), 3) AS dashboard_pct_change,\n       ROUND(100.0 * (b.last_signups - b.prior_signups) / NULLIF(b.prior_signups, 0), 3) AS backend_pct_change,\n       (d.last_signups - b.last_signups) AS last_week_gap,\n       (d.prior_signups - b.prior_signups) AS prior_week_gap\nFROM dash d\nFULL OUTER JOIN backend b ON d.device = b.device",
+    "columns": [
+      "device",
+      "dashboard_prior",
+      "dashboard_last",
+      "backend_prior",
+      "backend_last",
+      "dashboard_pct_change",
+      "backend_pct_change",
+      "last_week_gap",
+      "prior_week_gap"
+    ],
+    "rows": [
+      [
+        "mobile",
+        851,
+        600,
+        871,
+        800,
+        -29.495,
+        -8.152,
+        -200,
+        -20
+      ]
+    ],
+    "rowCount": 1,
+    "ms": 2689,
+    "at": "2026-10-23T18:20:53.838Z"
+  },
+  {
+    "id": "E2",
+    "hypothesis": "H0",
+    "purpose": "mobile signups by channel from dashboard for both weeks",
+    "sql": "SELECT channel,\n       SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS prior_signups,\n       SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS last_signups,\n       ROUND(100.0 * (SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) - SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END)) / NULLIF(SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END), 0), 3) AS pct_change\nFROM app_pg.trial_signups_daily\nWHERE device = 'mobile'\nGROUP BY channel\nORDER BY prior_signups DESC",
+    "columns": [
+      "channel",
+      "prior_signups",
+      "last_signups",
+      "pct_change"
+    ],
+    "rows": [
+      [
+        "organic",
+        250,
+        179,
+        -28.4
+      ],
+      [
+        "paid_search",
+        239,
+        149,
+        -37.657
+      ],
+      [
+        "paid_social",
+        120,
+        99,
+        -17.5
+      ],
+      [
+        "direct",
+        109,
+        81,
+        -25.688
+      ],
+      [
+        "email",
+        70,
+        52,
+        -25.714
+      ],
+      [
+        "referral",
+        45,
+        30,
+        -33.333
+      ],
+      [
+        "display",
+        18,
+        10,
+        -44.444
+      ]
+    ],
+    "rowCount": 7,
+    "ms": 349,
+    "at": "2026-10-23T18:20:56.529Z"
+  },
+  {
+    "id": "E3",
+    "hypothesis": "H1",
+    "purpose": "ad platform changes during the two weeks",
+    "sql": "SELECT changed_at, campaign_id, change_type, old_value, new_value, changed_by\nFROM ads_pg.ad_change_log\nWHERE to_date(changed_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY changed_at",
+    "columns": [
+      "changed_at",
+      "campaign_id",
+      "change_type",
+      "old_value",
+      "new_value",
+      "changed_by"
+    ],
+    "rows": [
+      [
+        "2026-10-13 09:12:00.0",
+        101,
+        "daily_budget",
+        1200,
+        500,
+        "ops-bot (Q4 budget rebalance)"
+      ],
+      [
+        "2026-10-14 11:45:00.0",
+        201,
+        "creative",
+        "carousel_v3",
+        "video_v1",
+        "jordan.lee"
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 201,
+    "at": "2026-10-23T18:20:56.878Z"
+  },
+  {
+    "id": "E4",
+    "hypothesis": "H2",
+    "purpose": "mobile dashboard vs backend by channel group, prior vs last week, to size measurement gap vs real decline",
+    "sql": "WITH dash AS (\n  SELECT\n    CASE WHEN channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS dash_prior,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS dash_last\n  FROM app_pg.trial_signups_daily\n  WHERE device = 'mobile'\n  GROUP BY 1\n),\nbackend AS (\n  SELECT\n    CASE WHEN signup_channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS backend_prior,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS backend_last\n  FROM app_pg.accounts\n  WHERE device = 'mobile'\n  GROUP BY 1\n)\nSELECT\n  COALESCE(d.channel_group, b.channel_group) AS channel_group,\n  d.dash_prior, d.dash_last, (d.dash_last - d.dash_prior) AS dash_change,\n  b.backend_prior, b.backend_last, (b.backend_last - b.backend_prior) AS backend_change,\n  (d.dash_prior - b.backend_prior) AS gap_prior, (d.dash_last - b.backend_last) AS gap_last\nFROM dash d FULL JOIN backend b ON d.channel_group = b.channel_group\nORDER BY 1",
+    "columns": [
+      "channel_group",
+      "dash_prior",
+      "dash_last",
+      "dash_change",
+      "backend_prior",
+      "backend_last",
+      "backend_change",
+      "gap_prior",
+      "gap_last"
+    ],
+    "rows": [
+      [
+        "non_paid",
+        474,
+        342,
+        -132,
+        482,
+        463,
+        -19,
+        -8,
+        -121
+      ],
+      [
+        "paid",
+        377,
+        258,
+        -119,
+        389,
+        337,
+        -52,
+        -12,
+        -79
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 885,
+    "at": "2026-10-23T18:28:38.723Z"
+  },
+  {
+    "id": "E5",
+    "hypothesis": "H5",
+    "purpose": "mobile sessions prior vs last week by paid vs non-paid channel",
+    "sql": "WITH s AS (\n  SELECT\n    CASE WHEN channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,\n    SUM(CASE WHEN session_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN sessions ELSE 0 END) AS prior_sessions,\n    SUM(CASE WHEN session_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN sessions ELSE 0 END) AS last_sessions\n  FROM app_pg.sessions_daily\n  WHERE device = 'mobile'\n  GROUP BY 1\n)\nSELECT\n  channel_group,\n  prior_sessions,\n  last_sessions,\n  last_sessions - prior_sessions AS change,\n  ROUND(100.0 * (last_sessions - prior_sessions) / NULLIF(prior_sessions, 0), 3) AS pct_change\nFROM s\nORDER BY channel_group",
+    "columns": [
+      "channel_group",
+      "prior_sessions",
+      "last_sessions",
+      "change",
+      "pct_change"
+    ],
+    "rows": [
+      [
+        "non_paid",
+        17588,
+        16772,
+        -816,
+        -4.64
+      ],
+      [
+        "paid",
+        17040,
+        15990,
+        -1050,
+        -6.162
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 428,
+    "at": "2026-10-23T18:38:37.973Z"
+  },
+  {
+    "id": "E6",
+    "hypothesis": "H5",
+    "purpose": "backend mobile accounts prior vs last week by paid vs non-paid signup channel",
+    "sql": "WITH a AS (\n  SELECT\n    CASE WHEN signup_channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS prior_accounts,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS last_accounts\n  FROM app_pg.accounts\n  WHERE device = 'mobile'\n  GROUP BY 1\n)\nSELECT\n  channel_group,\n  prior_accounts,\n  last_accounts,\n  last_accounts - prior_accounts AS change,\n  ROUND(100.0 * (last_accounts - prior_accounts) / NULLIF(prior_accounts, 0), 3) AS pct_change\nFROM a\nORDER BY channel_group",
+    "columns": [
+      "channel_group",
+      "prior_accounts",
+      "last_accounts",
+      "change",
+      "pct_change"
+    ],
+    "rows": [
+      [
+        "non_paid",
+        482,
+        463,
+        -19,
+        -3.942
+      ],
+      [
+        "paid",
+        389,
+        337,
+        -52,
+        -13.368
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 571,
+    "at": "2026-10-23T18:38:38.401Z"
+  },
+  {
+    "id": "E7",
+    "hypothesis": "H4",
+    "purpose": "daily mobile dashboard vs backend signups Oct 5-18 with Thanksgiving flag",
+    "sql": "WITH mobile_signups AS (\n  SELECT signup_date AS dt,\n         SUM(signups) AS dashboard_signups\n  FROM app_pg.trial_signups_daily\n  WHERE device = 'mobile'\n    AND signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\n  GROUP BY signup_date\n),\nmobile_accounts AS (\n  SELECT to_date(created_at) AS dt,\n         COUNT(*) AS backend_accounts\n  FROM app_pg.accounts\n  WHERE device = 'mobile'\n    AND to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\n  GROUP BY to_date(created_at)\n),\nholiday_check AS (\n  SELECT holiday_date AS dt, holiday_name\n  FROM whybot.ca_holidays\n  WHERE holiday_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\n)\nSELECT\n  COALESCE(s.dt, a.dt, h.dt) AS dt,\n  s.dashboard_signups,\n  a.backend_accounts,\n  h.holiday_name,\n  CASE\n    WHEN COALESCE(s.dt, a.dt, h.dt) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'prior'\n    WHEN COALESCE(s.dt, a.dt, h.dt) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 'last'\n  END AS week_bucket\nFROM mobile_signups s\nFULL OUTER JOIN mobile_accounts a ON s.dt = a.dt\nFULL OUTER JOIN holiday_check h ON COALESCE(s.dt, a.dt) = h.dt\nORDER BY dt",
+    "columns": [
+      "dt",
+      "dashboard_signups",
+      "backend_accounts",
+      "holiday_name",
+      "week_bucket"
+    ],
+    "rows": [
+      [
+        "2026-10-05",
+        132,
+        134,
+        null,
+        "prior"
+      ],
+      [
+        "2026-10-06",
+        135,
+        140,
+        null,
+        "prior"
+      ],
+      [
+        "2026-10-07",
+        137,
+        141,
+        null,
+        "prior"
+      ],
+      [
+        "2026-10-08",
+        132,
+        135,
+        null,
+        "prior"
+      ],
+      [
+        "2026-10-09",
+        131,
+        134,
+        null,
+        "prior"
+      ],
+      [
+        "2026-10-10",
+        97,
+        99,
+        null,
+        "prior"
+      ],
+      [
+        "2026-10-11",
+        87,
+        88,
+        null,
+        "prior"
+      ],
+      [
+        "2026-10-12",
+        116,
+        117,
+        "Thanksgiving",
+        "last"
+      ],
+      [
+        "2026-10-13",
+        120,
+        136,
+        null,
+        "last"
+      ],
+      [
+        "2026-10-14",
+        96,
+        127,
+        null,
+        "last"
+      ],
+      [
+        "2026-10-15",
+        82,
+        121,
+        null,
+        "last"
+      ],
+      [
+        "2026-10-16",
+        72,
+        118,
+        null,
+        "last"
+      ],
+      [
+        "2026-10-17",
+        58,
+        94,
+        null,
+        "last"
+      ],
+      [
+        "2026-10-18",
+        56,
+        87,
+        null,
+        "last"
+      ]
+    ],
+    "rowCount": 14,
+    "ms": 1360,
+    "at": "2026-10-23T18:50:38.492Z"
+  },
+  {
+    "id": "E8",
+    "hypothesis": "H1",
+    "purpose": "non-budget ad changes on paid mobile-relevant campaigns Oct 12-18",
+    "sql": "SELECT c.campaign_id, c.campaign_name, c.channel, c.platform,\n       l.change_type, l.old_value, l.new_value,\n       to_date(l.changed_at) AS changed_date, l.changed_by\nFROM ads_pg.ad_change_log l\nJOIN ads_pg.campaigns c ON c.campaign_id = l.campaign_id\nWHERE l.change_type <> 'daily_budget'\n  AND to_date(l.changed_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18'\n  AND c.channel IN ('paid_search','paid_social','display')\nORDER BY changed_date, c.campaign_id",
+    "columns": [
+      "campaign_id",
+      "campaign_name",
+      "channel",
+      "platform",
+      "change_type",
+      "old_value",
+      "new_value",
+      "changed_date",
+      "changed_by"
+    ],
+    "rows": [
+      [
+        201,
+        "Social - Retargeting",
+        "paid_social",
+        "meta_ads",
+        "creative",
+        "carousel_v3",
+        "video_v1",
+        "2026-10-14",
+        "jordan.lee"
+      ]
+    ],
+    "rowCount": 1,
+    "ms": 554,
+    "at": "2026-10-23T18:52:56.967Z"
+  },
+  {
+    "id": "E9",
+    "hypothesis": "H2",
+    "purpose": "product/releases in the two-week window that could alter mobile signup tracking",
+    "sql": "SELECT released_at, version, component, description, team\nFROM app_pg.release_log\nWHERE to_date(released_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY released_at",
+    "columns": [
+      "released_at",
+      "version",
+      "component",
+      "description",
+      "team"
+    ],
+    "rows": [
+      [
+        "2026-10-13 15:40:00.0",
+        "4.12.0",
+        "signup-web",
+        "Signup form redesign: new multi-step mobile stepper",
+        "growth-team"
+      ],
+      [
+        "2026-10-16 11:10:00.0",
+        "4.12.1",
+        "marketing-site",
+        "Fix pricing toggle copy",
+        "web-team"
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 194,
+    "at": "2026-10-23T18:52:57.522Z"
+  },
+  {
+    "id": "E10",
+    "hypothesis": "H5",
+    "purpose": "mobile dashboard signups by week split paid vs non-paid to size real demand share of -251",
+    "sql": "SELECT\n  CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'prior'\n       WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 'last' END AS week,\n  CASE WHEN channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,\n  SUM(signups) AS signups\nFROM app_pg.trial_signups_daily\nWHERE device = 'mobile'\n  AND signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nGROUP BY 1, 2\nORDER BY 1, 2",
+    "columns": [
+      "week",
+      "channel_group",
+      "signups"
+    ],
+    "rows": [
+      [
+        "last",
+        "non_paid",
+        342
+      ],
+      [
+        "last",
+        "paid",
+        258
+      ],
+      [
+        "prior",
+        "non_paid",
+        474
+      ],
+      [
+        "prior",
+        "paid",
+        377
+      ]
+    ],
+    "rowCount": 4,
+    "ms": 266,
+    "at": "2026-10-23T18:52:57.716Z"
+  },
+  {
+    "id": "E11",
+    "hypothesis": "H3",
+    "purpose": "pricing changes effective Oct 5-18 that could explain mobile demand softness",
+    "sql": "SELECT effective_date, plan, monthly_price_usd\nFROM app_pg.pricing_history\nWHERE effective_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY effective_date",
+    "columns": [
+      "effective_date",
+      "plan",
+      "monthly_price_usd"
+    ],
+    "rows": [],
+    "rowCount": 0,
+    "ms": 210,
+    "at": "2026-10-23T18:55:49.405Z"
+  }
+]

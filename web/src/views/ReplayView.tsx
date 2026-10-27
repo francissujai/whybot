@@ -42,7 +42,7 @@ export function ReplayView({ id, speed: initialSpeed, runs, onArchive, onHome }:
     <div style={{ paddingTop: 24 }}>
       <nav className="crumbs" aria-label="Breadcrumb">
         <button onClick={onArchive}>Archive</button><span aria-hidden>/</span>
-        <span>{runDate(id)}</span><span aria-hidden>/</span><span aria-current="page">Replay</span>
+        <span>{runDate(id)}</span><span aria-hidden>/</span><span aria-current="page">{runs?.find((r) => r.runId === id)?.sample ? "Replay of a sample run" : "Replay"}</span>
       </nav>
       {error ? (
         <div className="alert" role="alert" style={{ marginTop: 24 }}><b>This replay is not available.</b><span>{error}</span><div style={{ marginTop: 8 }}><Button onClick={onHome}>Back to investigate</Button></div></div>

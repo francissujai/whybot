@@ -1,7 +1,7 @@
 $ HMEM_IMPL=src/engines/hmem/index.ts npx tsx conformance/hmem/runner.ts
-# 2026-10-22T15:07:00.406Z
+# 2026-10-27T13:44:28.379Z
 
-H-MEM conformance: implementation = C:/Users/afsuj/Desktop/work/openagenthackathon/src/engines/hmem/index.ts
+H-MEM conformance: implementation = src/engines/hmem/index.ts
 
   record-validation
     PASS rv-001 a record with no source is rejected by construction

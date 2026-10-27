@@ -12,7 +12,7 @@ export function ArchiveList({ runs, limit, onReplay, onAskAgain }: { runs: RunIn
       {shown.map((r) => (
         <m.li layout className="run" key={r.runId} initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}>
           <span className="q">{r.question}</span>
-          <div className="date">{runDate(r.runId)}</div>
+          <div className="date">{runDate(r.runId)}{r.sample && <span className="sample-tag" title="A recorded run shipped with the repo in samples/"> · Sample run</span>}</div>
           <div className="acts">
             <a href={`/runs/${r.runId}/report.html`} target="_blank" rel="noreferrer">Report</a>
             {r.replay && <a href={`/replay/${r.runId}?speed=10`} onClick={(e) => { e.preventDefault(); onReplay(r.runId); }}>Replay</a>}

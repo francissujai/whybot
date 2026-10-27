@@ -1,0 +1,43 @@
+{
+  "id": "run-1792716009016-1",
+  "timestamp": 1792716009016,
+  "prompt": "Why did trial signups drop 18% last week?",
+  "mode": "RESEARCH",
+  "chunkConfig": {
+    "chunkSize": 6000,
+    "maxChunks": 10,
+    "carryoverTokens": 700,
+    "overlapTokens": 0
+  },
+  "chunks": [
+    {
+      "id": 1,
+      "tokens": 11177,
+      "carryover": "",
+      "content": ">> [E1] H0: dashboard vs backend gap by channel and device (14 rows)\n>> [E2] H1: ad platform changes during the two weeks (2 rows)\nVerdict: H2 SUPPORTED — E1 shows the dashboard/backend gap widened by ~184 signups last week, concentrated almost entirely on mobile (organic −59, paid_search −47, direct −31, paid_social −24, email −18; desktop gaps near zero), a mobile tracking/event-capture artifact explaining ~47% of the 389-signup dashboard drop. H1 SUPPORTED (partial) — E2 shows campaign 101 daily budget cut 1200→500 on 2026-10-13 and campaign 201 creative changed on 2026-10-14; paid search dashboard fell 609→419 (−190), but part of that is the mobile measurement gap, so the true ad-driven effect needs spend data to size.",
+      "promptTokens": 11512
+    },
+    {
+      "id": 2,
+      "tokens": 7090,
+      "carryover": "COMPLETED: H0 dashboard vs backend quantified [E1]: dashboard 2160→1771 (−18.0%), backend 2205→2000 (−9.3%), gap widened 184; H2 measurement/tracking: SUPPORTED — gap concentrated in mobile (organic −59, paid_search −47, direct −31, paid_social −24, email −18), desktop gaps small; H1 ad platform changes: SUPPORTED (partial) — campaign 101 budget 1200→500 on 2026-10-13, campaign 201 creative change on 2026-10-14 [E2].\nREMAINING: H3 pricing; H4 holidays/seasonality; H5 real demand (non-paid residual).\nDECISIONS: Dashboard = trial_signups_daily; backend = accounts; measurement gap ≈184 (~47% of 389 drop), real decline ≈104 (~53%).\nCONTEXT: Next size H1 with ad_spend_daily, verify H3/H4, then isolate H5 residual.",
+      "content": ">> [E3] H1: size paid spend and clicks change prior vs last week, incl campaigns 101 and 201 (1 rows)\n>> [E4] H3: pricing changes effective between the two weeks (0 rows)\n>> [E5] H4: Canadian holidays in prior vs last week (1 rows)\nCOMPLETED: H1 ad‑platform changes SUPPORTED (partial) – 20.2% spend, 19.9% clicks drop; campaigns 101 & 201 budget/creative changes [E2,E3]; H3 pricing RULED OUT – no pricing changes in the period [E4]; H4 holidays INCONCLUSIVE – Thanksgiving only in last week, effect too small to attribute [E5].\nREMAINING: H5 real demand (non‑paid residual).\nDECISIONS: Dashboard = trial_signups_daily; backend = accounts; measurement gap ≈184 (~47% of 389 drop), real decline ≈104 (~53%).\nCONTEXT: Next step: isolate the ~104‑signup residual after accounting for ad‑spend and measurement gaps, using backend signup counts and any remaining non‑paid factors.",
+      "promptTokens": 11027
+    },
+    {
+      "id": 3,
+      "tokens": 7263,
+      "carryover": "COMPLETED: H1 ad‑platform changes SUPPORTED (partial) – 20.2% spend, 19.9% clicks drop; campaigns 101 & 201 budget/creative changes [E2,E3]; H3 pricing RULED OUT – no pricing changes in the period [E4]; H4 holidays INCONCLUSIVE – Thanksgiving only in last week, effect too small to attribute [E5].\nREMAINING: H5 real demand (non‑paid residual).\nDECISIONS: Dashboard = trial_signups_daily; backend = accounts; measurement gap ≈184 (~47% of 389 drop), real decline ≈104 (~53%).\nCONTEXT: Next step: isolate the ~104‑signup residual after accounting for ad‑spend and measurement gaps, using backend signup counts and any remaining non‑paid factors.",
+      "content": ">> [E6] H5: backend trial signups by channel and device prior vs last week to isolate non-paid real demand residual (14 rows)\nVerdict: H5 real demand is SUPPORTED (small). Backend non-paid signups fell 37 total — organic −37, referral −10, direct +9, email +1 [E6] — confirming modest real demand softness outside paid channels. Paid search accounts fell 158 (desktop −105, mobile −53) [E6], consistent with the H1 ad-spend cut [E2,E3]; paid social −9 and display −1 [E6] sum to the −205 backend decline [E6]. Against the −389 dashboard drop [E1], the ≈184 dashboard–backend gap is measurement, not business change [E1]; paid search explains ≈158; residual non-paid real demand ≈37; paid social/display ≈10. These components sum to the full drop, leaving no material unexplained residual.",
+      "promptTokens": 7571
+    }
+  ],
+  "totalTokensUsed": 25530,
+  "totalTokensSaved": 27344,
+  "efficiencyPercent": 49.739877032779134,
+  "durationMs": 609576,
+  "status": "completed",
+  "tokenLabel": "measured",
+  "output": ">> [E1] H0: dashboard vs backend gap by channel and device (14 rows)\n>> [E2] H1: ad platform changes during the two weeks (2 rows)\nVerdict: H2 SUPPORTED — E1 shows the dashboard/backend gap widened by ~184 signups last week, concentrated almost entirely on mobile (organic −59, paid_search −47, direct −31, paid_social −24, email −18; desktop gaps near zero), a mobile tracking/event-capture artifact explaining ~47% of the 389-signup dashboard drop. H1 SUPPORTED (partial) — E2 shows campaign 101 daily budget cut 1200→500 on 2026-10-13 and campaign 201 creative changed on 2026-10-14; paid search dashboard fell 609→419 (−190), but part of that is the mobile measurement gap, so the true ad-driven effect needs spend data to size.\n\n>> [E3] H1: size paid spend and clicks change prior vs last week, incl campaigns 101 and 201 (1 rows)\n>> [E4] H3: pricing changes effective between the two weeks (0 rows)\n>> [E5] H4: Canadian holidays in prior vs last week (1 rows)\nCOMPLETED: H1 ad‑platform changes SUPPORTED (partial) – 20.2% spend, 19.9% clicks drop; campaigns 101 & 201 budget/creative changes [E2,E3]; H3 pricing RULED OUT – no pricing changes in the period [E4]; H4 holidays INCONCLUSIVE – Thanksgiving only in last week, effect too small to attribute [E5].\nREMAINING: H5 real demand (non‑paid residual).\nDECISIONS: Dashboard = trial_signups_daily; backend = accounts; measurement gap ≈184 (~47% of 389 drop), real decline ≈104 (~53%).\nCONTEXT: Next step: isolate the ~104‑signup residual after accounting for ad‑spend and measurement gaps, using backend signup counts and any remaining non‑paid factors.\n\n>> [E6] H5: backend trial signups by channel and device prior vs last week to isolate non-paid real demand residual (14 rows)\nVerdict: H5 real demand is SUPPORTED (small). Backend non-paid signups fell 37 total — organic −37, referral −10, direct +9, email +1 [E6] — confirming modest real demand softness outside paid channels. Paid search accounts fell 158 (desktop −105, mobile −53) [E6], consistent with the H1 ad-spend cut [E2,E3]; paid social −9 and display −1 [E6] sum to the −205 backend decline [E6]. Against the −389 dashboard drop [E1], the ≈184 dashboard–backend gap is measurement, not business change [E1]; paid search explains ≈158; residual non-paid real demand ≈37; paid social/display ≈10. These components sum to the full drop, leaving no material unexplained residual.",
+  "finalState": ">> [E6] H5: backend trial signups by channel and device prior vs last week to isolate non-paid real demand residual (14 rows) Verdict: H5 real demand is SUPPORTED (small). Backend non-paid signups fell 37 total — organic −37, referral −10, direct +9, email +1 [E6] — confirming modest real demand softness outside paid channels. Paid search accounts fell 158 (desktop −105, mobile −53) [E6], consistent with the H1 ad-spend cut [E2,E3]; paid social −9 and display −1 [E6] sum to the −205 backend decline [E6]. Against the −389 dashboard drop [E1], the ≈184 dashboard–backend gap is measurement, not business change [E1]; paid search explains ≈158; residual non-paid real demand ≈37; paid social/display ≈10. These components sum to the full drop, leaving no material unexplained residual. [TASK_COMPLETE]"
+}

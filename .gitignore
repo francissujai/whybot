@@ -23,8 +23,6 @@ zetaris-getting-started/
 Thumbs.db
 .vscode/
 .idea/
-.claude/
-.cursor/
 
 # local QA artifacts
 baseline-screenshots/

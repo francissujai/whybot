@@ -1,0 +1,704 @@
+[
+  {
+    "id": "E1",
+    "hypothesis": "H0",
+    "purpose": "Quantify weekly dashboard signups by channel and device for prior week (2026-10-05 to 10-11) vs last week (2026-10-12 to",
+    "sql": "SELECT\n  channel,\n  device,\n  SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS prior_signups,\n  SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS last_signups,\n  SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END)\n  - SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS change,\n  ROUND(100.0 * (\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END)\n    - SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END)\n  ) / NULLIF(\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END), 0\n  ), 3) AS pct_change\nFROM app_pg.trial_signups_daily\nGROUP BY channel, device\nORDER BY channel, device",
+    "columns": [
+      "channel",
+      "device",
+      "prior_signups",
+      "last_signups",
+      "change",
+      "pct_change"
+    ],
+    "rows": [
+      [
+        "direct",
+        "desktop",
+        162,
+        163,
+        1,
+        0.617
+      ],
+      [
+        "direct",
+        "mobile",
+        109,
+        81,
+        -28,
+        -25.688
+      ],
+      [
+        "display",
+        "desktop",
+        26,
+        26,
+        0,
+        0
+      ],
+      [
+        "display",
+        "mobile",
+        18,
+        10,
+        -8,
+        -44.444
+      ],
+      [
+        "email",
+        "desktop",
+        106,
+        107,
+        1,
+        0.943
+      ],
+      [
+        "email",
+        "mobile",
+        70,
+        52,
+        -18,
+        -25.714
+      ],
+      [
+        "organic",
+        "desktop",
+        393,
+        369,
+        -24,
+        -6.107
+      ],
+      [
+        "organic",
+        "mobile",
+        250,
+        179,
+        -71,
+        -28.4
+      ],
+      [
+        "paid_search",
+        "desktop",
+        370,
+        270,
+        -100,
+        -27.027
+      ],
+      [
+        "paid_search",
+        "mobile",
+        239,
+        149,
+        -90,
+        -37.657
+      ],
+      [
+        "paid_social",
+        "desktop",
+        182,
+        174,
+        -8,
+        -4.396
+      ],
+      [
+        "paid_social",
+        "mobile",
+        120,
+        99,
+        -21,
+        -17.5
+      ],
+      [
+        "referral",
+        "desktop",
+        70,
+        62,
+        -8,
+        -11.429
+      ],
+      [
+        "referral",
+        "mobile",
+        45,
+        30,
+        -15,
+        -33.333
+      ]
+    ],
+    "rowCount": 14,
+    "ms": 396,
+    "at": "2026-10-24T02:27:01.892Z"
+  },
+  {
+    "id": "E2",
+    "hypothesis": "H2",
+    "purpose": "dashboard signups by week, device, channel for prior vs last week",
+    "sql": "SELECT\n  CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'prior' WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 'last' END AS week,\n  device,\n  channel,\n  SUM(signups) AS dashboard_signups\nFROM app_pg.trial_signups_daily\nWHERE signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nGROUP BY 1, 2, 3\nORDER BY 1, 2, 3",
+    "columns": [
+      "week",
+      "device",
+      "channel",
+      "dashboard_signups"
+    ],
+    "rows": [
+      [
+        "last",
+        "desktop",
+        "direct",
+        163
+      ],
+      [
+        "last",
+        "desktop",
+        "display",
+        26
+      ],
+      [
+        "last",
+        "desktop",
+        "email",
+        107
+      ],
+      [
+        "last",
+        "desktop",
+        "organic",
+        369
+      ],
+      [
+        "last",
+        "desktop",
+        "paid_search",
+        270
+      ],
+      [
+        "last",
+        "desktop",
+        "paid_social",
+        174
+      ],
+      [
+        "last",
+        "desktop",
+        "referral",
+        62
+      ],
+      [
+        "last",
+        "mobile",
+        "direct",
+        81
+      ],
+      [
+        "last",
+        "mobile",
+        "display",
+        10
+      ],
+      [
+        "last",
+        "mobile",
+        "email",
+        52
+      ],
+      [
+        "last",
+        "mobile",
+        "organic",
+        179
+      ],
+      [
+        "last",
+        "mobile",
+        "paid_search",
+        149
+      ],
+      [
+        "last",
+        "mobile",
+        "paid_social",
+        99
+      ],
+      [
+        "last",
+        "mobile",
+        "referral",
+        30
+      ],
+      [
+        "prior",
+        "desktop",
+        "direct",
+        162
+      ],
+      [
+        "prior",
+        "desktop",
+        "display",
+        26
+      ],
+      [
+        "prior",
+        "desktop",
+        "email",
+        106
+      ],
+      [
+        "prior",
+        "desktop",
+        "organic",
+        393
+      ],
+      [
+        "prior",
+        "desktop",
+        "paid_search",
+        370
+      ],
+      [
+        "prior",
+        "desktop",
+        "paid_social",
+        182
+      ],
+      [
+        "prior",
+        "desktop",
+        "referral",
+        70
+      ],
+      [
+        "prior",
+        "mobile",
+        "direct",
+        109
+      ],
+      [
+        "prior",
+        "mobile",
+        "display",
+        18
+      ],
+      [
+        "prior",
+        "mobile",
+        "email",
+        70
+      ],
+      [
+        "prior",
+        "mobile",
+        "organic",
+        250
+      ],
+      [
+        "prior",
+        "mobile",
+        "paid_search",
+        239
+      ],
+      [
+        "prior",
+        "mobile",
+        "paid_social",
+        120
+      ],
+      [
+        "prior",
+        "mobile",
+        "referral",
+        45
+      ]
+    ],
+    "rowCount": 28,
+    "ms": 273,
+    "at": "2026-10-24T02:28:02.151Z"
+  },
+  {
+    "id": "E3",
+    "hypothesis": "H2",
+    "purpose": "backend accounts by week, device, signup channel for prior vs last week",
+    "sql": "SELECT\n  CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'prior' WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 'last' END AS week,\n  device,\n  signup_channel AS channel,\n  COUNT(*) AS backend_accounts\nFROM app_pg.accounts\nWHERE to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nGROUP BY 1, 2, 3\nORDER BY 1, 2, 3",
+    "columns": [
+      "week",
+      "device",
+      "channel",
+      "backend_accounts"
+    ],
+    "rows": [
+      [
+        "last",
+        "desktop",
+        "direct",
+        170
+      ],
+      [
+        "last",
+        "desktop",
+        "display",
+        26
+      ],
+      [
+        "last",
+        "desktop",
+        "email",
+        109
+      ],
+      [
+        "last",
+        "desktop",
+        "organic",
+        380
+      ],
+      [
+        "last",
+        "desktop",
+        "paid_search",
+        276
+      ],
+      [
+        "last",
+        "desktop",
+        "paid_social",
+        176
+      ],
+      [
+        "last",
+        "desktop",
+        "referral",
+        63
+      ],
+      [
+        "last",
+        "mobile",
+        "direct",
+        112
+      ],
+      [
+        "last",
+        "mobile",
+        "display",
+        18
+      ],
+      [
+        "last",
+        "mobile",
+        "email",
+        70
+      ],
+      [
+        "last",
+        "mobile",
+        "organic",
+        238
+      ],
+      [
+        "last",
+        "mobile",
+        "paid_search",
+        196
+      ],
+      [
+        "last",
+        "mobile",
+        "paid_social",
+        123
+      ],
+      [
+        "last",
+        "mobile",
+        "referral",
+        43
+      ],
+      [
+        "prior",
+        "desktop",
+        "direct",
+        163
+      ],
+      [
+        "prior",
+        "desktop",
+        "display",
+        26
+      ],
+      [
+        "prior",
+        "desktop",
+        "email",
+        107
+      ],
+      [
+        "prior",
+        "desktop",
+        "organic",
+        400
+      ],
+      [
+        "prior",
+        "desktop",
+        "paid_search",
+        381
+      ],
+      [
+        "prior",
+        "desktop",
+        "paid_social",
+        187
+      ],
+      [
+        "prior",
+        "desktop",
+        "referral",
+        70
+      ],
+      [
+        "prior",
+        "mobile",
+        "direct",
+        110
+      ],
+      [
+        "prior",
+        "mobile",
+        "display",
+        19
+      ],
+      [
+        "prior",
+        "mobile",
+        "email",
+        71
+      ],
+      [
+        "prior",
+        "mobile",
+        "organic",
+        255
+      ],
+      [
+        "prior",
+        "mobile",
+        "paid_search",
+        249
+      ],
+      [
+        "prior",
+        "mobile",
+        "paid_social",
+        121
+      ],
+      [
+        "prior",
+        "mobile",
+        "referral",
+        46
+      ]
+    ],
+    "rowCount": 28,
+    "ms": 401,
+    "at": "2026-10-24T02:28:02.424Z"
+  },
+  {
+    "id": "E4",
+    "hypothesis": "H1",
+    "purpose": "weekly ad spend, clicks, and impressions change prior vs last week",
+    "sql": "WITH weekly AS (\n  SELECT\n    SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN spend_usd ELSE 0 END) AS prior_spend,\n    SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN spend_usd ELSE 0 END) AS last_spend,\n    SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN clicks ELSE 0 END) AS prior_clicks,\n    SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN clicks ELSE 0 END) AS last_clicks,\n    SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN impressions ELSE 0 END) AS prior_impressions,\n    SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN impressions ELSE 0 END) AS last_impressions\n  FROM ads_pg.ad_spend_daily\n)\nSELECT\n  prior_spend, last_spend, last_spend - prior_spend AS spend_change,\n  ROUND(100.0 * (last_spend - prior_spend) / NULLIF(prior_spend, 0), 3) AS spend_pct_change,\n  prior_clicks, last_clicks, last_clicks - prior_clicks AS clicks_change,\n  ROUND(100.0 * (last_clicks - prior_clicks) / NULLIF(prior_clicks, 0), 3) AS clicks_pct_change,\n  prior_impressions, last_impressions, last_impressions - prior_impressions AS impressions_change,\n  ROUND(100.0 * (last_impressions - prior_impressions) / NULLIF(prior_impressions, 0), 3) AS impressions_pct_change\nFROM weekly",
+    "columns": [
+      "prior_spend",
+      "last_spend",
+      "spend_change",
+      "spend_pct_change",
+      "prior_clicks",
+      "last_clicks",
+      "clicks_change",
+      "clicks_pct_change",
+      "prior_impressions",
+      "last_impressions",
+      "impressions_change",
+      "impressions_pct_change"
+    ],
+    "rows": [
+      [
+        21556.18,
+        17211.53,
+        -4344.65,
+        -20.155,
+        16690,
+        13377,
+        -3313,
+        -19.85,
+        1353563,
+        1286181,
+        -67382,
+        -4.978
+      ]
+    ],
+    "rowCount": 1,
+    "ms": 328,
+    "at": "2026-10-24T02:32:12.670Z"
+  },
+  {
+    "id": "E5",
+    "hypothesis": "H1",
+    "purpose": "paid vs non-paid dashboard signup split prior vs last week",
+    "sql": "WITH weekly AS (\n  SELECT\n    CASE WHEN channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS prior_signups,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS last_signups\n  FROM app_pg.trial_signups_daily\n  GROUP BY 1\n)\nSELECT\n  channel_group,\n  prior_signups, last_signups,\n  last_signups - prior_signups AS change,\n  ROUND(100.0 * (last_signups - prior_signups) / NULLIF(prior_signups, 0), 3) AS pct_change\nFROM weekly\nORDER BY channel_group",
+    "columns": [
+      "channel_group",
+      "prior_signups",
+      "last_signups",
+      "change",
+      "pct_change"
+    ],
+    "rows": [
+      [
+        "non_paid",
+        1205,
+        1043,
+        -162,
+        -13.444
+      ],
+      [
+        "paid",
+        955,
+        728,
+        -227,
+        -23.77
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 258,
+    "at": "2026-10-24T02:32:12.999Z"
+  },
+  {
+    "id": "E6",
+    "hypothesis": "H1",
+    "purpose": "ad platform change log during Oct 5-18",
+    "sql": "SELECT\n  changed_at, campaign_id, change_type, old_value, new_value, changed_by\nFROM ads_pg.ad_change_log\nWHERE to_date(changed_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY changed_at",
+    "columns": [
+      "changed_at",
+      "campaign_id",
+      "change_type",
+      "old_value",
+      "new_value",
+      "changed_by"
+    ],
+    "rows": [
+      [
+        "2026-10-13 09:12:00.0",
+        101,
+        "daily_budget",
+        1200,
+        500,
+        "ops-bot (Q4 budget rebalance)"
+      ],
+      [
+        "2026-10-14 11:45:00.0",
+        201,
+        "creative",
+        "carousel_v3",
+        "video_v1",
+        "jordan.lee"
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 135,
+    "at": "2026-10-24T02:32:13.258Z"
+  },
+  {
+    "id": "E7",
+    "hypothesis": "H3",
+    "purpose": "pricing changes effective Oct 5-18",
+    "sql": "SELECT effective_date, plan, monthly_price_usd\nFROM app_pg.pricing_history\nWHERE effective_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY effective_date, plan",
+    "columns": [
+      "effective_date",
+      "plan",
+      "monthly_price_usd"
+    ],
+    "rows": [],
+    "rowCount": 0,
+    "ms": 150,
+    "at": "2026-10-24T02:34:18.472Z"
+  },
+  {
+    "id": "E8",
+    "hypothesis": "H4",
+    "purpose": "Canadian holidays Oct 5-18",
+    "sql": "SELECT holiday_date, holiday_name, is_federal\nFROM whybot.ca_holidays\nWHERE holiday_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY holiday_date",
+    "columns": [
+      "holiday_date",
+      "holiday_name",
+      "is_federal"
+    ],
+    "rows": [
+      [
+        "2026-10-12",
+        "Thanksgiving",
+        1
+      ]
+    ],
+    "rowCount": 1,
+    "ms": 653,
+    "at": "2026-10-24T02:34:18.623Z"
+  },
+  {
+    "id": "E9",
+    "hypothesis": "H5",
+    "purpose": "backend trial accounts by channel prior vs last week",
+    "sql": "SELECT\n  signup_channel AS channel,\n  SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS prior_accounts,\n  SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS last_accounts,\n  SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END)\n  - SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS change\nFROM app_pg.accounts\nWHERE to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nGROUP BY signup_channel\nORDER BY channel",
+    "columns": [
+      "channel",
+      "prior_accounts",
+      "last_accounts",
+      "change"
+    ],
+    "rows": [
+      [
+        "direct",
+        273,
+        282,
+        9
+      ],
+      [
+        "display",
+        45,
+        44,
+        -1
+      ],
+      [
+        "email",
+        178,
+        179,
+        1
+      ],
+      [
+        "organic",
+        655,
+        618,
+        -37
+      ],
+      [
+        "paid_search",
+        630,
+        472,
+        -158
+      ],
+      [
+        "paid_social",
+        308,
+        299,
+        -9
+      ],
+      [
+        "referral",
+        116,
+        106,
+        -10
+      ]
+    ],
+    "rowCount": 7,
+    "ms": 325,
+    "at": "2026-10-24T02:34:19.276Z"
+  }
+]

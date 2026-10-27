@@ -65,9 +65,10 @@ function Finding({ p }: { p: P }) {
       <rect x="50" y="250" width="740" height="250" rx="16" className="f-card" />
       <m.text x="82" y="372" className="f-t f-huge f-bold" style={{ letterSpacing: "-0.04em" }}>{numText}</m.text>
       <m.text x="84" y="406" className="f-t f-dim" style={{ opacity: l1 }}>trial signups, week on week</m.text>
-      <m.text x="360" y="312" className="f-t f-lg f-bold" style={{ opacity: l1 }}>The Brand Search budget cut did it.</m.text>
-      <m.text x="360" y="344" className="f-t f-dim" style={{ opacity: l2 }}>1,200 to 500 a day on 13 Oct, cited by E3.</m.text>
-      <m.text x="360" y="376" className="f-t f-dim" style={{ opacity: l3 }}>Not the cause: tracking after 4.12.0, the holiday, pricing.</m.text>
+      <m.text x="360" y="312" className="f-t f-lg f-bold" style={{ opacity: l1 }}>Half the drop is a tracking gap.</m.text>
+      <m.text x="360" y="344" className="f-t f-dim" style={{ opacity: l2 }}>Real loss: the Brand Search budget cut (E3).</m.text>
+      <m.text x="360" y="376" className="f-t f-dim" style={{ opacity: l3 }}>Ruled out: the holiday and pricing.</m.text>
+      <m.text x="82" y="482" className="f-t f-dim" style={{ opacity: l3, fontSize: 12 }}>Illustration based on a recorded run (samples/2026-10-24T02-21-21)</m.text>
       {[["E1", c1, 360], ["E2", c2, 424], ["E3", c3, 488]].map(([id, c, x]) => (
         <m.g key={id as string} style={{ opacity: c as never }}>
           <rect x={x as number} y="424" width="48" height="26" rx="5" className="f-mark" />

@@ -129,7 +129,7 @@ async function loadRuns() {
   catch { $("runs").textContent = "Could not load past investigations."; return; }
   $("runs").replaceChildren(...s.runs.map((r) => {
     const card = document.createElement("div"); card.className = "run";
-    const q = document.createElement("span"); q.className = "q"; q.textContent = r.question;
+    const q = document.createElement("span"); q.className = "q"; q.textContent = (r.sample ? "[Sample run] " : "") + r.question;
     const sm = document.createElement("small"); sm.textContent = r.runId.replace("T", " ").slice(0, 16) + " UTC";
     const acts = document.createElement("div"); acts.className = "acts";
     acts.append(link("Report", "/runs/" + r.runId + "/report.html", true));

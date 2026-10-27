@@ -1,6 +1,7 @@
 import type { SessionEvent, TimedEvent } from "./caseModel";
 
-export interface RunInfo { runId: string; question: string; replay: boolean }
+/** sample: a recorded example shipped in samples/, not a run made on this machine. */
+export interface RunInfo { runId: string; question: string; replay: boolean; sample?: boolean }
 export interface Status { running: { id: string; question: string } | null; runs: RunInfo[] }
 
 /** Same endpoints the original page used; nothing here changes the server contract. */

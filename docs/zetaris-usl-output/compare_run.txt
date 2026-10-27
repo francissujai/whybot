@@ -1,0 +1,11 @@
+bash.exe: warning: could not find /tmp, please create!
+U1 hand-coded: [{"device":"desktop","tracked_prior":1309,"tracked_last":1171,"created_prior":1334,"created_last":1200,"coverage_last":0.976},{"device":"mobile","tracked_prior":851,"tracked_last":600,"created_prior":871,"created_last":800,"coverage_last":0.75}]
+U1 USL:        [["desktop",1309,1171,1334,1200,0.976],["mobile",851,600,871,800,0.75]]
+U2 hand-coded: [["2026-10-05",2033.53,100,null],["2026-10-06",2031.54,100,null],["2026-10-07",2005.45,104,null],["2026-10-08",2074.02,95,null],["2026-10-09",1997.84,92,null],["2026-10-10",2033.6,71,null],["2026-10-11",1976.45,68,null],["2026-10-12",1897.32,82,"Thanksgiving"],["2026-10-13",1322.08,75,null],["2026-10-14",1351.72,73,null],["2026-10-15",1328.27,71,null],["2026-10-16",1349.59,68,null],["2026-10-17",1331.44,53,null],["2026-10-18",1330.41,50,null]]
+U2 USL:        [["2026-10-05",2033.53,100,null],["2026-10-06",2031.54,100,null],["2026-10-07",2005.45,104,null],["2026-10-08",2074.02,95,null],["2026-10-09",1997.84,92,null],["2026-10-10",2033.6,71,null],["2026-10-11",1976.45,68,null],["2026-10-12",1897.32,82,"Thanksgiving"],["2026-10-13",1322.08,75,null],["2026-10-14",1351.72,73,null],["2026-10-15",1328.27,71,null],["2026-10-16",1349.59,68,null],["2026-10-17",1331.44,53,null],["2026-10-18",1330.41,50,null]]
+U3 hand-coded: [["paid_search",630,472,-158,-190],["organic",655,618,-37,-95],["referral",116,106,-10,-23],["paid_social",308,299,-9,-29],["display",45,44,-1,-8],["email",178,179,1,-17],["direct",273,282,9,-27]]
+U3 USL:        [["paid_search",630,472,-158,-190],["organic",655,618,-37,-95],["referral",116,106,-10,-23],["paid_social",308,299,-9,-29],["display",45,44,-1,-8],["email",178,179,1,-17],["direct",273,282,9,-27]]
+
+Same answers: U1 true, U2 true, U3 true
+Wall clock (one warm run): hand-coded 134 ms, USL 2328 ms
+Lines of code (non-blank, non-comment): hand-coded core 56; USL model DDL + activations 73, USL queries 31

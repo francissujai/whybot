@@ -1,7 +1,7 @@
 $ MARKOVIAN_IMPL=src/engines/markovian/index.ts npx tsx conformance/markovian/runner.ts
-# 2026-10-22T15:07:00.258Z
+# 2026-10-27T13:44:28.192Z
 
-Markovian conformance: implementation = C:/Users/afsuj/Desktop/work/openagenthackathon/src/engines/markovian/index.ts
+Markovian conformance: implementation = src/engines/markovian/index.ts
 
   PASS eff-001 efficiency model reproduces the documented worked example: N=20 -> 86% (within 0.5%)
   PASS snap-001 run records carry a mandatory chunkConfig snapshot

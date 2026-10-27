@@ -6,3 +6,5 @@ These runners are copied unchanged from [meterless/meterless](https://github.com
 ```
 npm run conformance
 ```
+
+Licence: Apache License 2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE). The rest of WhyBot is MIT (root [LICENSE](../LICENSE)).

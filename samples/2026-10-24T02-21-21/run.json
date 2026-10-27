@@ -1,0 +1,50 @@
+{
+  "id": "run-1792808481784-1",
+  "timestamp": 1792808481784,
+  "prompt": "Why did trial signups drop 18% last week?",
+  "mode": "RESEARCH",
+  "chunkConfig": {
+    "chunkSize": 6000,
+    "maxChunks": 10,
+    "carryoverTokens": 700,
+    "overlapTokens": 0
+  },
+  "chunks": [
+    {
+      "id": 1,
+      "tokens": 8259,
+      "carryover": "",
+      "content": ">> [E1] H0: Quantify weekly dashboard signups by channel and device for prior week (2026-10-05 to 10-11) vs last week (2026-10-12 to (14 rows)\nVerdict: H0 SUPPORTED — dashboard trial signups fell 2160→1771 (−18.0%, −389) [E1]. The decline is broad but concentrated in mobile across every channel (organic −71, paid_search −90, direct −28, email −18, paid_social −21, referral −15), with paid_search desktop also down materially (−100).",
+      "promptTokens": 19907
+    },
+    {
+      "id": 2,
+      "tokens": 4634,
+      "carryover": "COMPLETED: H0 quantify drop: SUPPORTED — dashboard signups fell 2160→1771 (−18.0%, −389) [E1]; decline concentrated in mobile across all channels, paid_search desktop also down −100.\nREMAINING: H1 ad platform changes; H2 dashboard-vs-backend measurement gap; H3 pricing; H4 holidays/seasonality; H5 real demand decline.\nDECISIONS: Metric = app_pg.trial_signups_daily; weeks 2026-10-05–11 vs 2026-10-12–18.\nCONTEXT: Total drop −389 signups. Next: compare app_pg.accounts backend totals for same weeks to isolate measurement gap before blaming demand.",
+      "content": ">> [E2] H2: dashboard signups by week, device, channel for prior vs last week (28 rows)\n>> [E3] H2: backend accounts by week, device, signup channel for prior vs last week (28 rows)\nH2 verdict: SUPPORTED. Dashboard signups fell 2160→1771 (−389) while backend accounts fell only 2205→2000 (−205) [E2,E3]. The dashboard-to-backend gap widened from −45 to −229, so ≈184 signups (≈47% of the dashboard drop) is a measurement discrepancy, not a business change. The remaining ≈205 signups (≈53%) is a real decline in backend account creation [E2,E3].",
+      "promptTokens": 8409
+    },
+    {
+      "id": 3,
+      "tokens": 6790,
+      "carryover": "COMPLETED: H0 drop quantified (−389, −18.0%) [E1]; H2 measurement gap SUPPORTED — dashboard −389 vs backend −205, gap widened +184 (≈47% of drop), real decline ≈205 (≈53%) [E2,E3]\nREMAINING: H1 ad platform changes; H3 pricing; H4 holidays/seasonality; H5 real demand residual\nDECISIONS: Metric = app_pg.trial_signups_daily; backend = app_pg.accounts; measurement gap ≈184 signups (47%), real decline ≈205 (53%) to be explained by H1/H3/H4/H5\nCONTEXT: Total dashboard drop −389 [E1]; backend drop −205 [E3]; next: test H1 ad platform changes (spend/clicks/campaign changes) to size paid-media contribution to the real decline.",
+      "content": ">> [E4] H1: weekly ad spend, clicks, and impressions change prior vs last week (1 rows)\n>> [E5] H1: paid vs non-paid dashboard signup split prior vs last week (2 rows)\n>> [E6] H1: ad platform change log during Oct 5-18 (2 rows)\nH1 SUPPORTED (partial). Spend fell −20.2% and clicks −19.9% [E4], while paid signups fell −227 (−23.8%) versus non-paid −162 (−13.4%) [E5]; paid accounts for ~58% of the −389 dashboard decline. Traceable events: campaign 101 daily_budget 1200→500 on 2026-10-13 [E6], and campaign 201 creative carousel_v3→video_v1 on 2026-10-14 [E6]. Non-paid also declined, so H1 is a contributor, not the sole cause.",
+      "promptTokens": 17682
+    },
+    {
+      "id": 4,
+      "tokens": 10612,
+      "carryover": "COMPLETED: H0 drop quantified (−389, −18.0%) [E1]; H2 measurement gap SUPPORTED — dashboard −389 vs backend −205, gap +184 (≈47%), real decline ≈205 (≈53%) [E2,E3]; H1 ad platform changes SUPPORTED (partial) — spend −20.2%, clicks −19.9% [E4]; paid −227 (−23.8%), non-paid −162 (−13.4%) [E5]; events: campaign 101 budget 1200→500 on 2026-10-13 [E6], campaign 201 creative carousel_v3→video_v1 on 2026-10-14 [E6]\nREMAINING: H3 pricing; H4 holidays/seasonality; H5 real demand residual\nDECISIONS: Metric = app_pg.trial_signups_daily; backend = app_pg.accounts; measurement gap ≈184 (47%), real decline ≈205 (53%)\nCONTEXT: Paid explains ~58% of dashboard drop; non-paid also fell so H1 is partial; next test H3 pricing, then H4 holidays, then size H5 residual against backend",
+      "content": ">> [E7] H3: pricing changes effective Oct 5-18 (0 rows)\n>> [E8] H4: Canadian holidays Oct 5-18 (1 rows)\n>> [E9] H5: backend trial accounts by channel prior vs last week (7 rows)\nH3 RULED OUT — zero pricing_history rows effective Oct 5–18 [E7], so no price change occurred.\n\nH4 RULED OUT as sole explanation — only Thanksgiving, Mon 2026-10-12 (federal) [E8]; one day cannot produce a week-long drop.\n\nH5 SUPPORTED (partial) — backend shows a real decline of −205 accounts [E9]; paid_search −158 aligns with H1 ad-platform changes, leaving a residual real decline of organic −37, referral −10, display −1 (≈ −48, ~23% of the −205 backend decline, ~12% of the −389 dashboard drop) not explained by ads, pricing, or holidays.",
+      "promptTokens": 17061
+    }
+  ],
+  "totalTokensUsed": 30295,
+  "totalTokensSaved": 38035,
+  "efficiencyPercent": 53.47251511317306,
+  "durationMs": 835122,
+  "status": "completed",
+  "tokenLabel": "measured",
+  "output": ">> [E1] H0: Quantify weekly dashboard signups by channel and device for prior week (2026-10-05 to 10-11) vs last week (2026-10-12 to (14 rows)\nVerdict: H0 SUPPORTED — dashboard trial signups fell 2160→1771 (−18.0%, −389) [E1]. The decline is broad but concentrated in mobile across every channel (organic −71, paid_search −90, direct −28, email −18, paid_social −21, referral −15), with paid_search desktop also down materially (−100).\n\n>> [E2] H2: dashboard signups by week, device, channel for prior vs last week (28 rows)\n>> [E3] H2: backend accounts by week, device, signup channel for prior vs last week (28 rows)\nH2 verdict: SUPPORTED. Dashboard signups fell 2160→1771 (−389) while backend accounts fell only 2205→2000 (−205) [E2,E3]. The dashboard-to-backend gap widened from −45 to −229, so ≈184 signups (≈47% of the dashboard drop) is a measurement discrepancy, not a business change. The remaining ≈205 signups (≈53%) is a real decline in backend account creation [E2,E3].\n\n>> [E4] H1: weekly ad spend, clicks, and impressions change prior vs last week (1 rows)\n>> [E5] H1: paid vs non-paid dashboard signup split prior vs last week (2 rows)\n>> [E6] H1: ad platform change log during Oct 5-18 (2 rows)\nH1 SUPPORTED (partial). Spend fell −20.2% and clicks −19.9% [E4], while paid signups fell −227 (−23.8%) versus non-paid −162 (−13.4%) [E5]; paid accounts for ~58% of the −389 dashboard decline. Traceable events: campaign 101 daily_budget 1200→500 on 2026-10-13 [E6], and campaign 201 creative carousel_v3→video_v1 on 2026-10-14 [E6]. Non-paid also declined, so H1 is a contributor, not the sole cause.\n\n>> [E7] H3: pricing changes effective Oct 5-18 (0 rows)\n>> [E8] H4: Canadian holidays Oct 5-18 (1 rows)\n>> [E9] H5: backend trial accounts by channel prior vs last week (7 rows)\nH3 RULED OUT — zero pricing_history rows effective Oct 5–18 [E7], so no price change occurred.\n\nH4 RULED OUT as sole explanation — only Thanksgiving, Mon 2026-10-12 (federal) [E8]; one day cannot produce a week-long drop.\n\nH5 SUPPORTED (partial) — backend shows a real decline of −205 accounts [E9]; paid_search −158 aligns with H1 ad-platform changes, leaving a residual real decline of organic −37, referral −10, display −1 (≈ −48, ~23% of the −205 backend decline, ~12% of the −389 dashboard drop) not explained by ads, pricing, or holidays.",
+  "finalState": "COMPLETED: H3 pricing RULED OUT, zero rows [E7]; H4 holidays RULED OUT as sole cause, only Thanksgiving Mon 2026-10-12 [E8]; H5 real demand SUPPORTED (partial), backend −205 [E9], paid_search −158 via H1, residual ≈ −48 organic/referral/display unexplained.\nREMAINING: none\nDECISIONS: dashboard −389 = measurement gap −184 (47%) + real decline −205 (53%); H1 paid via ad changes, H2 tracking gap, H5 residual real demand.\nCONTEXT: All hypotheses have verdicts and the parts add up; H3 and H4 excluded."
+}
