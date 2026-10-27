@@ -1,0 +1,16 @@
+WhyBot: Meterless conformance runners
+
+The files in this directory, except results/ and this NOTICE, are copied
+without modification from the Meterless project:
+
+  https://github.com/meterless/meterless  (commit 1742dec)
+  Copyright the Meterless authors
+  Licensed under the Apache License, Version 2.0 (see LICENSE in this directory)
+
+  conformance/markovian/runner.ts
+  conformance/hmem/runner.ts
+  conformance/hmem/vectors/vectors.json
+
+conformance/results/ holds WhyBot's own scorecards produced by these runners
+against WhyBot's engine implementations in src/engines/. The rest of WhyBot is
+licensed under the MIT License in the repository root.
