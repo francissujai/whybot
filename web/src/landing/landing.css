@@ -11,11 +11,14 @@
 .lp-title { margin: 0; font: 400 var(--ds-t-title)/var(--ds-lh-title) var(--ds-serif); letter-spacing: var(--ds-ls-title); text-wrap: balance; }
 .lp section[id] { scroll-margin-top: var(--ds-bar-marketing); }
 
-/* top bar: attached, solid, ruled once the page scrolls */
+/* top bar: a plain masthead. Wordmark, a rule, what the product is, and one text link into the app. Attached, solid, ruled once the page scrolls. */
 .lp-nav { position: sticky; top: 0; z-index: 30; background: var(--ds-bg); border-bottom: 1px solid transparent; transition: border-color var(--ds-dur-app) var(--ds-ease-out); }
 .lp-nav.is-scrolled { border-bottom-color: var(--ds-line); }
 .lp-nav-in { display: flex; align-items: center; gap: var(--ds-s-6); height: var(--ds-bar-marketing); max-width: var(--ds-container); margin: 0 auto; padding: 0 var(--ds-section-x); }
-.lp-links { margin-left: auto; }
+.lp-tagline { padding-left: var(--ds-s-5); border-left: 1px solid var(--ds-line); font-size: var(--ds-t-small); color: var(--ds-text-2); white-space: nowrap; }
+.lp-nav-app { margin-left: auto; font: 500 var(--ds-t-nav)/1 var(--ds-font); color: var(--ds-text); text-decoration: none; text-underline-offset: 6px; white-space: nowrap; }
+.lp-nav-app:hover { text-decoration: underline; text-decoration-thickness: 1px; }
+.lp-nav-app:focus-visible { outline: 2px solid var(--ds-accent-text); outline-offset: 4px; border-radius: 2px; }
 
 /* hero */
 .lp-hero-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ds-s-8); padding-top: var(--ds-s-8); padding-bottom: var(--ds-section-y); }
@@ -116,9 +119,8 @@
 }
 @media (max-width: 768px) {
   .lp { --ds-section-y: 72px; --ds-section-x: 16px; --ds-t-display: 46px; --ds-t-title: 30px; --ds-t-subtitle: 22px; }
-  .lp-links { display: none; }
-  .lp-nav .menu-toggle { display: inline-flex; align-items: center; margin-left: auto; }
-  .lp-nav-in { gap: var(--ds-s-5); }
+  .lp-nav-in { gap: var(--ds-s-4); }
+  .lp-tagline { display: none; }
   .lp-hero-in { gap: var(--ds-s-7); padding-top: var(--ds-s-7); }
   .lp-facts .lp-wrap { grid-template-columns: minmax(0, 1fr); gap: var(--ds-s-5); }
   .lp-caps li { grid-template-columns: 32px minmax(0, 1fr); padding: var(--ds-s-5) 0; }
@@ -127,7 +129,6 @@
   .pv-row { grid-template-columns: 70px minmax(0, 1fr) 56px; }
   .pv-lanes { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 440px) { .lp-nav .lp-nav-cta { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   .lp-nav, .lp-plist [role="tab"], .pv-steps li, .pv-steps li i { transition: none; }
   .lp-panels > [role="tabpanel"] { animation: none; }

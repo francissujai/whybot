@@ -5,6 +5,7 @@ const lane = (c: string) => ({ "--c": c }) as React.CSSProperties;
 // Typographic hero: the product is a question, so the page leads with it and shows no visual.
 export const content: LandingContent = {
   product: "WhyBot",
+  tagline: "Metric investigation agent",
   headline: <>Find out <em>why</em> your number moved.</>,
   lede: "Ask about a metric. WhyBot tests competing explanations against your data and cites the query behind every number in its answer.",
   facts: [

@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ButtonLink } from "../ui/Button";
-import { MenuSheet } from "../ui/MenuSheet";
 import { ThemeButton } from "../theme";
 import "./landing.css";
 
 export interface LandingContent {
   product: string;
+  /** a few plain words after the wordmark in the top bar */
+  tagline: string;
   /** Instrument Serif headline. It may hold the page's one italic word (<em>). */
   headline: ReactNode;
   lede: string;
@@ -27,34 +28,18 @@ const SECTIONS = [["What it does", "capabilities"], ["Why", "why"], ["Product", 
 
 /** The product landing page. `open` goes to an app URL without a page load. */
 export function Landing({ c, open, data }: { c: LandingContent; open: (to: string) => void; data?: number[] }) {
-  const [menu, setMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState<string | null>(null);
   const [pillar, setPillar] = useState(0);
 
-  // the top bar gets its rule once the page scrolls, and the link for the section in view is marked
+  // the top bar gets its rule once the page scrolls
   useEffect(() => {
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      setScrolled(window.scrollY > 4);
-      const line = window.innerHeight * 0.35;
-      let current: string | null = null;
-      for (const [, id] of SECTIONS) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= line) current = id;
-      }
-      setActive(current);
-    };
-    const on = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
+    const on = () => setScrolled(window.scrollY > 4);
+    on();
     window.addEventListener("scroll", on, { passive: true });
-    window.addEventListener("resize", on);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", on); window.removeEventListener("resize", on); };
+    return () => window.removeEventListener("scroll", on);
   }, []);
 
   const go = (to: string) => (e: React.MouseEvent) => { e.preventDefault(); open(to); };
-  const jump = (id: string) => document.getElementById(id)?.scrollIntoView();
 
   return (
     <div className="lp">
@@ -62,20 +47,10 @@ export function Landing({ c, open, data }: { c: LandingContent; open: (to: strin
       <header className={`lp-nav${scrolled ? " is-scrolled" : ""}`}>
         <div className="lp-nav-in">
           <a className="wordmark" href="/" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0 }); }}>{c.product}</a>
-          <nav className="bar-links lp-links" aria-label="Sections">
-            {SECTIONS.map(([label, id]) => <a key={id} href={`#${id}`} aria-current={active === id ? "location" : undefined}>{label}</a>)}
-          </nav>
-          <button type="button" className="menu-toggle" aria-expanded={menu} onClick={() => setMenu(true)}>Menu</button>
-          <ButtonLink variant="primary" className="lp-nav-cta" href="/app" onClick={go("/app")}>Open the app</ButtonLink>
+          <span className="lp-tagline">{c.tagline}</span>
+          <a className="lp-nav-app" href="/app" onClick={go("/app")}>Open the app <span aria-hidden="true">→</span></a>
         </div>
       </header>
-      {menu && (
-        <MenuSheet title={c.product} onClose={() => setMenu(false)}
-          links={SECTIONS.map(([label, id]) => ({ label, href: `#${id}`, current: active === id, onSelect: () => jump(id) }))}>
-          <ButtonLink variant="primary" href="/app" onClick={go("/app")}>Open the app</ButtonLink>
-          <ThemeButton />
-        </MenuSheet>
-      )}
 
       <main>
         <section className={`lp-hero${c.preview ? " has-preview" : ""}`} aria-labelledby="lp-h1">
