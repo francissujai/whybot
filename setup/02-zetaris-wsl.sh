@@ -116,10 +116,7 @@ cat <<EOF
 Next (in your browser):
   1. Open http://localhost:3000 and sign in with your admin email/password.
   2. SQL Editor:  SELECT 1 AS one;   -> one row
-  3. Run the 4 statements in zetaris-getting-started/open_data/rest_apis/sql/non_rate_limited/02_pokeapi_create.sql
-     one at a time, then:
-       SELECT pokemon_name, ability_name, is_hidden FROM pokeapi.pikachu_abilities_table;   -> 2 rows
-  4. Create an API key for your user (copy it immediately) and put it in openagenthackathon/.env
+  3. Create an API key for your user (copy it immediately) and put it in openagenthackathon/.env
 
 Stop / start later:   cd ~/zetaris-platform && docker compose stop   |   docker compose start
 NEVER run 'docker compose down -v' unless you want to wipe everything.

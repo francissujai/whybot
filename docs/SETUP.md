@@ -13,7 +13,7 @@ The hackathon rules require Zetaris and Meterless to run locally. Budget about 1
 
 | Account | Why | Where |
 |---|---|---|
-| GitHub access to this repo | the code | ask Francis for an invite |
+| GitHub | clone the repo | github.com/francissujai/whybot |
 | Zetaris Cloud | download the local Zetaris bundle and registry login | cloud.enterprise.zetaris.com/register |
 | Meterless | download Nightshift | bottom of meterless.ai (email verification) |
 | NVIDIA Build | Nemotron cloud API key (only needed for cloud lanes) | build.nvidia.com |
@@ -56,9 +56,8 @@ Before every push, `git status` must not list `.env`. The repo's `.gitignore` co
 
 - Zetaris **and** Meterless must run on the builder's machine.
 - At least one Meterless engine must power a **working** feature. We use Markovian and H-MEM, both passing the official conformance suites (`npm run conformance`).
-- Nightshift must be the app's **primary model provider**. For the NVIDIA prize, Nemotron must visibly power a real feature; the compute receipts in every report show this.
+- Nightshift must be the app's **primary model provider**. Nemotron must visibly power a real feature; the compute receipts in every report show which Nemotron lane served each call.
 - Zetaris can't read laptop files. Data must live in a database or URL it can reach (we use the `whybot-pg` container).
-- Any AI coding tool is allowed.
 
 ## Troubleshooting
 
