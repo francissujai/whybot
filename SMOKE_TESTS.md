@@ -35,7 +35,7 @@ Open http://127.0.0.1:4173 and check the browser console after each flow (expect
 | 10 | Reduced motion | Turn on "reduce motion" in the OS | Cards jump to their lane instead of gliding; nothing else moves | a completed run |
 | 11 | Memory | Ask "Why did mobile trial signups fall last week?" after flow 4 | "Recalled N findings from earlier cases" under the heading | flow 4 |
 | 12 | CLI | `npm run check`, `npm run why -- "<question>"`, `npm run memory -- list` | Checks PASS; report written; memories listed | Zetaris + Nightshift |
-| 13 | Landing page | Open `/` at 1440 px and at 375 px; scroll to the end | Floating nav; hero object turns slowly and tilts with the pointer; the first headline word cycles every few seconds; sections fade up once; the paper section reveals its sentence word by word while pinned; pillar rows switch the preview (hover, click, arrow keys); **Open the app** goes to `/app` without a page load; **Auto / Light / Dark** switches theme. With reduce motion on: still hero object, no cycling, full sentence shown | — |
+| 13 | Landing page | Open `/` at 1440 px and at 375 px; scroll to the end | Attached top bar gains a rule after scrolling; the headline, one sentence and **Open the app** are visible without scrolling; the product views switch on click and with the arrow keys; **Open the app** goes to `/app` without a page load; at 375 px the links sit behind **Menu**, which opens a full-screen sheet that Escape closes; **Theme** in the footer switches Auto, Light and Dark | — |
 
 Flows 4–6, 10, 11 and 12 cannot run without Zetaris and Nightshift.
 
