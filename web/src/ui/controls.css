@@ -34,7 +34,7 @@
 .btn-tertiary:active:not(:disabled) { color: var(--ds-text); }
 
 /* ------------------------------------------------------------ wordmark and top-bar links */
-.wordmark { font: 400 var(--ds-t-wordmark)/1 var(--ds-serif); letter-spacing: -0.01em; color: var(--ds-text); text-decoration: none; white-space: nowrap; }
+.wordmark { font: 700 var(--ds-t-wordmark)/1 var(--ds-display); letter-spacing: -0.035em; color: var(--ds-text); text-decoration: none; white-space: nowrap; }
 a.wordmark:hover { color: var(--ds-text); text-decoration: none; }
 .bar-links { display: flex; align-items: center; gap: var(--ds-s-6); }
 .bar-links a, .bar-links button {
@@ -65,8 +65,14 @@ a.wordmark:hover { color: var(--ds-text); text-decoration: none; }
 .menu-sheet-top { display: flex; align-items: center; justify-content: space-between; height: var(--ds-bar-app); flex: none; }
 .menu-sheet-top .menu-toggle { display: inline-flex; align-items: center; }
 .menu-sheet nav { display: flex; flex-direction: column; }
-.menu-sheet nav a { padding: var(--ds-s-3) 0; border-bottom: 1px solid var(--ds-line); font: 400 var(--ds-t-menu)/1.15 var(--ds-serif); color: var(--ds-text-2); text-decoration: none; }
+.menu-sheet nav a { padding: var(--ds-s-3) 0; border-bottom: 1px solid var(--ds-line); font: 500 var(--ds-t-menu)/1.1 var(--ds-display); letter-spacing: -0.035em; color: var(--ds-text-2); text-decoration: none; }
 .menu-sheet nav a:hover, .menu-sheet nav a[aria-current] { color: var(--ds-text); }
 .menu-sheet nav a:focus-visible { outline: 2px solid var(--ds-accent-text); outline-offset: 2px; }
 .menu-sheet-extra { display: flex; flex-direction: column; align-items: flex-start; gap: var(--ds-s-4); }
 .menu-sheet-extra .btn-primary, .menu-sheet-extra .btn-secondary { align-self: stretch; }
+
+@media (max-width: 520px) {
+  .appbar .wordmark { font-size: 22px; }
+  .appbar-in { gap: var(--ds-s-3); }
+  .appbar-end { gap: var(--ds-s-3); }
+}
