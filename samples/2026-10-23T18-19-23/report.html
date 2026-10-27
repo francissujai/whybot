@@ -1,0 +1,204 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhyBot · Why did mobile trial signups fall last week?</title>
+<style>
+:root{--ink:#16181d;--muted:#667085;--line:#e4e7ec;--accent:#0b6bcb;--bg:#fbfbfa;--flat:#0b6bcb;--naive:#d0d5dd;--warn:#b54708}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:940px;margin:0 auto;padding:40px 24px 80px}header h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+.muted{color:var(--muted);font-size:13px}h2{font-size:19px;margin:34px 0 10px}h3{font-size:16px}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13.5px}th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{font-weight:600;background:#f2f4f7}
+a.cite{display:inline-block;font-size:11.5px;font-weight:600;color:var(--accent);background:#eaf2fb;border-radius:4px;padding:0 5px;text-decoration:none}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:18px 0}
+.ev{background:#fff;border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:8px 12px}.ev summary{cursor:pointer}.ev:target{outline:2px solid var(--accent)}
+pre{background:#f2f4f7;border-radius:6px;padding:10px;overflow:auto;font-size:12.5px}
+.warn{border-left:3px solid var(--warn);background:#fffaeb;padding:8px 12px;font-size:13.5px}.ok{border-left:3px solid #067647;background:#ecfdf3;padding:8px 12px;font-size:13.5px}
+.bar{display:grid;grid-template-columns:60px 1fr 120px;gap:10px;align-items:center;font-size:12.5px;margin:4px 0}.track{position:relative;height:14px}
+.track div{position:absolute;left:0;top:0;height:100%;border-radius:3px}.naive{background:var(--naive)}.flat{background:var(--flat)}.num{color:var(--muted);text-align:right}
+.legend span{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 12px;vertical-align:middle}.err{color:var(--warn)}
+</style></head><body><main>
+<header><div class="muted">WhyBot investigation · 2026-10-23 18:19 UTC</div><h1>Why did mobile trial signups fall last week?</h1>
+<div class="muted">11 queries through Zetaris · 9 Markovian steps (completed) · model meterless/deep via Meterless Runtime (Nightshift)</div></header>
+<div class="card"><h3>Answer  </h3>
+<p>The −251 mobile trial‑signup drop splits into a ≈184‑signup tracking gap caused by the Oct 13 2026 4.12.0 mobile‑stepper redesign and a genuine −71‑signup backend decline, of which ≈52 signups are paid (driven by the campaign 201 creative swap) and ≈19 signups are non‑paid (reflecting broader softness). The dashboard fell from 851→600 <a class="cite" href="#E1">E1</a>; backend from 871→800 <a class="cite" href="#E1">E1</a>; measurement gap ≈184 <a class="cite" href="#E4">E4</a>.</p>
+<h3>What explains the change  </h3>
+<table><thead><tr><th>Cause</th><th>Real or measurement</th><th>Effect on the metric</th><th>Verdict</th><th>Evidence</th></tr></thead><tbody><tr><td>Mobile‑stepper redesign (release 4.12.0, 2026‑10‑13 15:40)</td><td>Measurement</td><td>Inflated dashboard drop by ~184 signups (dashboard‑backend gap)</td><td>Supported</td><td><a class="cite" href="#E9">E9</a><a class="cite" href="#E4">E4</a></td></tr><tr><td>Paid‑search budget cut (campaign 101, daily_budget $1200→$500, 2026‑10‑13)</td><td>Real demand (paid)</td><td>Reduced paid_search signups by 90 (37.7 % of total dashboard drop)</td><td>Supported</td><td><a class="cite" href="#E3">E3</a></td></tr><tr><td>Paid‑social creative swap (campaign 201, carousel_v3→video_v1, 2026‑10‑14)</td><td>Real demand (paid)</td><td>Contributed to −52 paid‑backend drop and part of −37 % paid‑search signup fall</td><td>Supported</td><td><a class="cite" href="#E8">E8</a><a class="cite" href="#E10">E10</a></td></tr><tr><td>Non‑paid demand softness (organic, direct, referral, email)</td><td>Real demand (non‑paid)</td><td>Backend accounts fell 19 (−3.9 %); sessions fell 816 (−4.6 %)</td><td>Supported</td><td><a class="cite" href="#E5">E5</a><a class="cite" href="#E6">E6</a></td></tr><tr><td>Thanksgiving concentration</td><td>Ruling out</td><td>Decline spread Oct 12–18, not concentrated on 2026‑10‑12</td><td>Ruled out</td><td><a class="cite" href="#E7">E7</a></td></tr><tr><td>Pricing changes</td><td>Ruling out</td><td>No price changes effective Oct 5–18</td><td>Ruled out</td><td><a class="cite" href="#E11">E11</a></td></tr></tbody></table>
+<h3>Hypotheses ruled out  </h3>
+<ul><li><strong>H3 pricing:</strong> <code>app_pg.pricing_history</code> returned 0 rows for effective dates Oct 5–18 <a class="cite" href="#E11">E11</a>; no price change could explain the softness.  </li><li><strong>H4 Thanksgiving concentration:</strong> Daily signups show a steady decline across Oct 12–18, not a spike on 2026‑10‑12 <a class="cite" href="#E7">E7</a>.</li></ul>
+<h3>What to do next  </h3>
+<p>1. <strong>Monitor backend trial signups daily</strong> to track the real‑demand trend; owner: analytics.  </p>
+<p>2. <strong>Run a rollout impact test</strong> on the new multi‑step mobile stepper (release 4.12.0) to quantify any remaining tracking bias; owner: growth/engineering.  </p>
+<p>3. <strong>Optimize paid‑social creative performance</strong> post‑swap (campaign 201 video_v1) and assess ROI; owner: marketing.  </p>
+<p>4. <strong>Review paid‑search budget allocation</strong> after the Q4 rebalance (campaign 101) to align spend with signup goals; owner: marketing/finance.</p>
+<h3>Caveats  </h3>
+<ul><li>Dashboard signups and backend accounts use different definitions (signup vs. account creation), so the gap is an approximation.  </li><li>The measurement gap assumes the stepper redesign altered tracking; other undetected changes could contribute modestly.  </li><li>Non‑paid softness is inferred from session counts; actual conversion may vary by user segment.  </li><li>No user‑level data beyond channel groups is available, limiting granular attribution.</li></ul></div>
+<h2>Citation check</h2>
+<div class="warn">Number without a citation: “The −251 mobile trial‑signup drop splits into a ≈184‑signup tracking gap caused by the Oct 13 2026 4.12.0 mobile‑stepper redesign and a genu”</div><div class="warn">Number without a citation: “**Optimize paid‑social creative performance** post‑swap (campaign 201 video_v1) and assess ROI; owner: marketing.”</div><div class="warn">Number without a citation: “**Review paid‑search budget allocation** after the Q4 rebalance (campaign 101) to align spend with signup goals; owner: marketing/finance.”</div>
+<h2>Context per step (Markovian engine)</h2>
+<p class="muted">Tokens sent to the model per step: <b style="color:var(--flat)">flat</b> carryover prompt vs. a <b>naive</b> single conversation that keeps every earlier step (lower bound: earlier answers only). Token numbers are <b>measured</b>. Run efficiency 76.6% (194,626 tokens saved by the spec formula).</p>
+<div class="legend muted"><span style="background:var(--flat)"></span>Markovian<span style="background:var(--naive)"></span>naive</div>
+<div class="bar"><span class="lbl">step 1</span><div class="track"><div class="naive" style="width:13.515706894802692%"></div><div class="flat" style="width:13.515706894802692%"></div></div><span class="num">7,994 / 7,994</span></div><div class="bar"><span class="lbl">step 2</span><div class="track"><div class="naive" style="width:17.12372772461367%"></div><div class="flat" style="width:6.377438880059513%"></div></div><span class="num">3,772 / 10,128</span></div><div class="bar"><span class="lbl">step 3</span><div class="track"><div class="naive" style="width:41.50576539410949%"></div><div class="flat" style="width:26.836979677408447%"></div></div><span class="num">15,873 / 24,549</span></div><div class="bar"><span class="lbl">step 4</span><div class="track"><div class="naive" style="width:34.46555980116999%"></div><div class="flat" style="width:4.745883069015656%"></div></div><span class="num">2,807 / 20,385</span></div><div class="bar"><span class="lbl">step 5</span><div class="track"><div class="naive" style="width:60.55016400094681%"></div><div class="flat" style="width:27.92581070571129%"></div></div><span class="num">16,517 / 35,813</span></div><div class="bar"><span class="lbl">step 6</span><div class="track"><div class="naive" style="width:53.69932032597302%"></div><div class="flat" style="width:6.602306157643796%"></div></div><span class="num">3,905 / 31,761</span></div><div class="bar"><span class="lbl">step 7</span><div class="track"><div class="naive" style="width:66.79403509958408%"></div><div class="flat" style="width:13.253643526189428%"></div></div><span class="num">7,839 / 39,506</span></div><div class="bar"><span class="lbl">step 8</span><div class="track"><div class="naive" style="width:100%"></div><div class="flat" style="width:35.106347005714674%"></div></div><span class="num">20,764 / 59,146</span></div><div class="bar"><span class="lbl">step 9</span><div class="track"><div class="naive" style="width:97.551820917729%"></div><div class="flat" style="width:11.130084874716802%"></div></div><span class="num">6,583 / 57,698</span></div>
+<h2>Model calls (Nightshift compute receipts)</h2><p class="muted">Which model actually answered each call, as reported by Meterless Runtime. Full receipts with ids are in receipts.json.</p><table><thead><tr><th>Served by</th><th>Provider</th><th>Where</th><th>Calls</th><th>Tokens in</th><th>Tokens out</th></tr></thead><tbody><tr><td>Nemotron 3.5 Super VL 120B A12B<br><code>nvidia/nemotron-3.5-super-vl-120b-a12b</code></td><td>nvidia</td><td>cloud</td><td>12</td><td>60,900</td><td>37,837</td></tr><tr><td>Nemotron 3.5 Lightning 30B A3B<br><code>nvidia/nemotron-3.5-lightning-30b-a3b</code></td><td>nvidia</td><td>cloud</td><td>5</td><td>36,850</td><td>21,457</td></tr><tr><td>meterless/deep<br><code>meterless/deep</code></td><td>?</td><td>?</td><td>4</td><td>0</td><td>0</td></tr></tbody></table>
+<h2>Memory (H-MEM engine)</h2><p class="muted">Findings from earlier investigations go into the first step. New verdicts are stored with the run and evidence they came from.</p><h3>Recalled before this investigation</h3><table><thead><tr><th>id</th><th>tier</th><th>conf</th><th>memory</th><th>provenance</th></tr></thead><tbody><tr><td><code>mem-1</code></td><td>working</td><td>0.80</td><td>Week 2026-10-12..2026-10-18 conclusion for &quot;Why did trial signups drop 18% last week?&quot;: Verdict: H5 real demand is SUPPORTED (small). Backend non-paid signups fell 37 total — organic −37, referral −10, direct +9, email +1 — confirming modest real demand softness outside paid channels. Paid search accounts fell 158 (desktop −105, mobile −53), consistent with the H1 ad-spend cut; paid social −9 and display −1 sum to the −205 backend decline. Against the −389 dashboard drop, the ≈184 dashboard–backend gap is measurement, not business change; paid search explains ≈158; residual non-paid real demand ≈37; paid social/display ≈10. These components sum to the full drop, leaving no materi</td><td class="muted">2026-10-23T00-40-09</td></tr></tbody></table><h3>Stored after this investigation</h3><table><thead><tr><th>id</th><th>tier</th><th>conf</th><th>memory</th><th>provenance</th></tr></thead><tbody><tr><td><code>mem-2</code></td><td>working</td><td>0.80</td><td>Week 2026-10-12..2026-10-18 conclusion for &quot;Why did mobile trial signups fall last week?&quot;: H3 RULED OUT — app_pg.pricing_history returned zero rows for effective dates Oct 5–18, so no price change can explain the mobile demand softness.
+
+Conclusion: The mobile trial signup drop (−251 dashboard vs −71 backend) divides into measurement and real demand. The ≈184 dashboard–backend gap is explained by H2, release 4.12.0 mobile stepper redesign on 2026-10-13 15:40, which altered mobile signup tracking. The remaining −71 backend decline is real demand: partly H1 paid social creative change (carousel_v3→video_v1 on campaign 201, 2026-10-14) and partly H5 broad non-paid softness. H3 pricing</td><td class="muted">2026-10-23T18-19-23</td></tr></tbody></table>
+<h2>Evidence</h2>
+<p class="muted">Every query WhyBot ran, with the exact SQL and rows. Cited items are open.</p>
+<details id="E1" class="ev" open><summary><b>E1</b> · H0 · mobile signups dashboard vs backend by week <span class="muted">1 rows · 2689 ms</span></summary><pre>WITH dash AS (
+  SELECT device,
+    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS prior_signups,
+    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS last_signups
+  FROM app_pg.trial_signups_daily
+  WHERE device = 'mobile'
+  GROUP BY device
+),
+backend AS (
+  SELECT device,
+    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS prior_signups,
+    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS last_signups
+  FROM app_pg.accounts
+  WHERE device = 'mobile'
+  GROUP BY device
+)
+SELECT COALESCE(d.device, b.device) AS device,
+       d.prior_signups AS dashboard_prior,
+       d.last_signups AS dashboard_last,
+       b.prior_signups AS backend_prior,
+       b.last_signups AS backend_last,
+       ROUND(100.0 * (d.last_signups - d.prior_signups) / NULLIF(d.prior_signups, 0), 3) AS dashboard_pct_change,
+       ROUND(100.0 * (b.last_signups - b.prior_signups) / NULLIF(b.prior_signups, 0), 3) AS backend_pct_change,
+       (d.last_signups - b.last_signups) AS last_week_gap,
+       (d.prior_signups - b.prior_signups) AS prior_week_gap
+FROM dash d
+FULL OUTER JOIN backend b ON d.device = b.device</pre><table><thead><tr><th>device</th><th>dashboard_prior</th><th>dashboard_last</th><th>backend_prior</th><th>backend_last</th><th>dashboard_pct_change</th><th>backend_pct_change</th><th>last_week_gap</th><th>prior_week_gap</th></tr></thead><tbody><tr><td>mobile</td><td>851</td><td>600</td><td>871</td><td>800</td><td>-29.495</td><td>-8.152</td><td>-200</td><td>-20</td></tr></tbody></table></details>
+<details id="E2" class="ev"><summary><b>E2</b> · H0 · mobile signups by channel from dashboard for both weeks <span class="muted">7 rows · 349 ms</span></summary><pre>SELECT channel,
+       SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS prior_signups,
+       SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS last_signups,
+       ROUND(100.0 * (SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) - SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END)) / NULLIF(SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END), 0), 3) AS pct_change
+FROM app_pg.trial_signups_daily
+WHERE device = 'mobile'
+GROUP BY channel
+ORDER BY prior_signups DESC</pre><table><thead><tr><th>channel</th><th>prior_signups</th><th>last_signups</th><th>pct_change</th></tr></thead><tbody><tr><td>organic</td><td>250</td><td>179</td><td>-28.4</td></tr><tr><td>paid_search</td><td>239</td><td>149</td><td>-37.657</td></tr><tr><td>paid_social</td><td>120</td><td>99</td><td>-17.5</td></tr><tr><td>direct</td><td>109</td><td>81</td><td>-25.688</td></tr><tr><td>email</td><td>70</td><td>52</td><td>-25.714</td></tr><tr><td>referral</td><td>45</td><td>30</td><td>-33.333</td></tr><tr><td>display</td><td>18</td><td>10</td><td>-44.444</td></tr></tbody></table></details>
+<details id="E3" class="ev" open><summary><b>E3</b> · H1 · ad platform changes during the two weeks <span class="muted">2 rows · 201 ms</span></summary><pre>SELECT changed_at, campaign_id, change_type, old_value, new_value, changed_by
+FROM ads_pg.ad_change_log
+WHERE to_date(changed_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'
+ORDER BY changed_at</pre><table><thead><tr><th>changed_at</th><th>campaign_id</th><th>change_type</th><th>old_value</th><th>new_value</th><th>changed_by</th></tr></thead><tbody><tr><td>2026-10-13 09:12:00.0</td><td>101</td><td>daily_budget</td><td>1200</td><td>500</td><td>ops-bot (Q4 budget rebalance)</td></tr><tr><td>2026-10-14 11:45:00.0</td><td>201</td><td>creative</td><td>carousel_v3</td><td>video_v1</td><td>jordan.lee</td></tr></tbody></table></details>
+<details id="E4" class="ev" open><summary><b>E4</b> · H2 · mobile dashboard vs backend by channel group, prior vs last week, to size measurement gap vs real decline <span class="muted">2 rows · 885 ms</span></summary><pre>WITH dash AS (
+  SELECT
+    CASE WHEN channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,
+    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS dash_prior,
+    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS dash_last
+  FROM app_pg.trial_signups_daily
+  WHERE device = 'mobile'
+  GROUP BY 1
+),
+backend AS (
+  SELECT
+    CASE WHEN signup_channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,
+    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS backend_prior,
+    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS backend_last
+  FROM app_pg.accounts
+  WHERE device = 'mobile'
+  GROUP BY 1
+)
+SELECT
+  COALESCE(d.channel_group, b.channel_group) AS channel_group,
+  d.dash_prior, d.dash_last, (d.dash_last - d.dash_prior) AS dash_change,
+  b.backend_prior, b.backend_last, (b.backend_last - b.backend_prior) AS backend_change,
+  (d.dash_prior - b.backend_prior) AS gap_prior, (d.dash_last - b.backend_last) AS gap_last
+FROM dash d FULL JOIN backend b ON d.channel_group = b.channel_group
+ORDER BY 1</pre><table><thead><tr><th>channel_group</th><th>dash_prior</th><th>dash_last</th><th>dash_change</th><th>backend_prior</th><th>backend_last</th><th>backend_change</th><th>gap_prior</th><th>gap_last</th></tr></thead><tbody><tr><td>non_paid</td><td>474</td><td>342</td><td>-132</td><td>482</td><td>463</td><td>-19</td><td>-8</td><td>-121</td></tr><tr><td>paid</td><td>377</td><td>258</td><td>-119</td><td>389</td><td>337</td><td>-52</td><td>-12</td><td>-79</td></tr></tbody></table></details>
+<details id="E5" class="ev" open><summary><b>E5</b> · H5 · mobile sessions prior vs last week by paid vs non-paid channel <span class="muted">2 rows · 428 ms</span></summary><pre>WITH s AS (
+  SELECT
+    CASE WHEN channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,
+    SUM(CASE WHEN session_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN sessions ELSE 0 END) AS prior_sessions,
+    SUM(CASE WHEN session_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN sessions ELSE 0 END) AS last_sessions
+  FROM app_pg.sessions_daily
+  WHERE device = 'mobile'
+  GROUP BY 1
+)
+SELECT
+  channel_group,
+  prior_sessions,
+  last_sessions,
+  last_sessions - prior_sessions AS change,
+  ROUND(100.0 * (last_sessions - prior_sessions) / NULLIF(prior_sessions, 0), 3) AS pct_change
+FROM s
+ORDER BY channel_group</pre><table><thead><tr><th>channel_group</th><th>prior_sessions</th><th>last_sessions</th><th>change</th><th>pct_change</th></tr></thead><tbody><tr><td>non_paid</td><td>17588</td><td>16772</td><td>-816</td><td>-4.64</td></tr><tr><td>paid</td><td>17040</td><td>15990</td><td>-1050</td><td>-6.162</td></tr></tbody></table></details>
+<details id="E6" class="ev" open><summary><b>E6</b> · H5 · backend mobile accounts prior vs last week by paid vs non-paid signup channel <span class="muted">2 rows · 571 ms</span></summary><pre>WITH a AS (
+  SELECT
+    CASE WHEN signup_channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,
+    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS prior_accounts,
+    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS last_accounts
+  FROM app_pg.accounts
+  WHERE device = 'mobile'
+  GROUP BY 1
+)
+SELECT
+  channel_group,
+  prior_accounts,
+  last_accounts,
+  last_accounts - prior_accounts AS change,
+  ROUND(100.0 * (last_accounts - prior_accounts) / NULLIF(prior_accounts, 0), 3) AS pct_change
+FROM a
+ORDER BY channel_group</pre><table><thead><tr><th>channel_group</th><th>prior_accounts</th><th>last_accounts</th><th>change</th><th>pct_change</th></tr></thead><tbody><tr><td>non_paid</td><td>482</td><td>463</td><td>-19</td><td>-3.942</td></tr><tr><td>paid</td><td>389</td><td>337</td><td>-52</td><td>-13.368</td></tr></tbody></table></details>
+<details id="E7" class="ev" open><summary><b>E7</b> · H4 · daily mobile dashboard vs backend signups Oct 5-18 with Thanksgiving flag <span class="muted">14 rows · 1360 ms</span></summary><pre>WITH mobile_signups AS (
+  SELECT signup_date AS dt,
+         SUM(signups) AS dashboard_signups
+  FROM app_pg.trial_signups_daily
+  WHERE device = 'mobile'
+    AND signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'
+  GROUP BY signup_date
+),
+mobile_accounts AS (
+  SELECT to_date(created_at) AS dt,
+         COUNT(*) AS backend_accounts
+  FROM app_pg.accounts
+  WHERE device = 'mobile'
+    AND to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'
+  GROUP BY to_date(created_at)
+),
+holiday_check AS (
+  SELECT holiday_date AS dt, holiday_name
+  FROM whybot.ca_holidays
+  WHERE holiday_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'
+)
+SELECT
+  COALESCE(s.dt, a.dt, h.dt) AS dt,
+  s.dashboard_signups,
+  a.backend_accounts,
+  h.holiday_name,
+  CASE
+    WHEN COALESCE(s.dt, a.dt, h.dt) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'prior'
+    WHEN COALESCE(s.dt, a.dt, h.dt) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 'last'
+  END AS week_bucket
+FROM mobile_signups s
+FULL OUTER JOIN mobile_accounts a ON s.dt = a.dt
+FULL OUTER JOIN holiday_check h ON COALESCE(s.dt, a.dt) = h.dt
+ORDER BY dt</pre><table><thead><tr><th>dt</th><th>dashboard_signups</th><th>backend_accounts</th><th>holiday_name</th><th>week_bucket</th></tr></thead><tbody><tr><td>2026-10-05</td><td>132</td><td>134</td><td></td><td>prior</td></tr><tr><td>2026-10-06</td><td>135</td><td>140</td><td></td><td>prior</td></tr><tr><td>2026-10-07</td><td>137</td><td>141</td><td></td><td>prior</td></tr><tr><td>2026-10-08</td><td>132</td><td>135</td><td></td><td>prior</td></tr><tr><td>2026-10-09</td><td>131</td><td>134</td><td></td><td>prior</td></tr><tr><td>2026-10-10</td><td>97</td><td>99</td><td></td><td>prior</td></tr><tr><td>2026-10-11</td><td>87</td><td>88</td><td></td><td>prior</td></tr><tr><td>2026-10-12</td><td>116</td><td>117</td><td>Thanksgiving</td><td>last</td></tr><tr><td>2026-10-13</td><td>120</td><td>136</td><td></td><td>last</td></tr><tr><td>2026-10-14</td><td>96</td><td>127</td><td></td><td>last</td></tr><tr><td>2026-10-15</td><td>82</td><td>121</td><td></td><td>last</td></tr><tr><td>2026-10-16</td><td>72</td><td>118</td><td></td><td>last</td></tr><tr><td>2026-10-17</td><td>58</td><td>94</td><td></td><td>last</td></tr><tr><td>2026-10-18</td><td>56</td><td>87</td><td></td><td>last</td></tr></tbody></table></details>
+<details id="E8" class="ev" open><summary><b>E8</b> · H1 · non-budget ad changes on paid mobile-relevant campaigns Oct 12-18 <span class="muted">1 rows · 554 ms</span></summary><pre>SELECT c.campaign_id, c.campaign_name, c.channel, c.platform,
+       l.change_type, l.old_value, l.new_value,
+       to_date(l.changed_at) AS changed_date, l.changed_by
+FROM ads_pg.ad_change_log l
+JOIN ads_pg.campaigns c ON c.campaign_id = l.campaign_id
+WHERE l.change_type &lt;&gt; 'daily_budget'
+  AND to_date(l.changed_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18'
+  AND c.channel IN ('paid_search','paid_social','display')
+ORDER BY changed_date, c.campaign_id</pre><table><thead><tr><th>campaign_id</th><th>campaign_name</th><th>channel</th><th>platform</th><th>change_type</th><th>old_value</th><th>new_value</th><th>changed_date</th><th>changed_by</th></tr></thead><tbody><tr><td>201</td><td>Social - Retargeting</td><td>paid_social</td><td>meta_ads</td><td>creative</td><td>carousel_v3</td><td>video_v1</td><td>2026-10-14</td><td>jordan.lee</td></tr></tbody></table></details>
+<details id="E9" class="ev" open><summary><b>E9</b> · H2 · product/releases in the two-week window that could alter mobile signup tracking <span class="muted">2 rows · 194 ms</span></summary><pre>SELECT released_at, version, component, description, team
+FROM app_pg.release_log
+WHERE to_date(released_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'
+ORDER BY released_at</pre><table><thead><tr><th>released_at</th><th>version</th><th>component</th><th>description</th><th>team</th></tr></thead><tbody><tr><td>2026-10-13 15:40:00.0</td><td>4.12.0</td><td>signup-web</td><td>Signup form redesign: new multi-step mobile stepper</td><td>growth-team</td></tr><tr><td>2026-10-16 11:10:00.0</td><td>4.12.1</td><td>marketing-site</td><td>Fix pricing toggle copy</td><td>web-team</td></tr></tbody></table></details>
+<details id="E10" class="ev" open><summary><b>E10</b> · H5 · mobile dashboard signups by week split paid vs non-paid to size real demand share of -251 <span class="muted">4 rows · 266 ms</span></summary><pre>SELECT
+  CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'prior'
+       WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 'last' END AS week,
+  CASE WHEN channel IN ('paid_search','paid_social','display') THEN 'paid' ELSE 'non_paid' END AS channel_group,
+  SUM(signups) AS signups
+FROM app_pg.trial_signups_daily
+WHERE device = 'mobile'
+  AND signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'
+GROUP BY 1, 2
+ORDER BY 1, 2</pre><table><thead><tr><th>week</th><th>channel_group</th><th>signups</th></tr></thead><tbody><tr><td>last</td><td>non_paid</td><td>342</td></tr><tr><td>last</td><td>paid</td><td>258</td></tr><tr><td>prior</td><td>non_paid</td><td>474</td></tr><tr><td>prior</td><td>paid</td><td>377</td></tr></tbody></table></details>
+<details id="E11" class="ev" open><summary><b>E11</b> · H3 · pricing changes effective Oct 5-18 that could explain mobile demand softness <span class="muted">0 rows · 210 ms</span></summary><pre>SELECT effective_date, plan, monthly_price_usd
+FROM app_pg.pricing_history
+WHERE effective_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'
+ORDER BY effective_date</pre><table><thead><tr><th>effective_date</th><th>plan</th><th>monthly_price_usd</th></tr></thead><tbody></tbody></table></details>
+</main></body></html>

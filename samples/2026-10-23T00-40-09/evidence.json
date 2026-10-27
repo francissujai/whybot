@@ -1,0 +1,400 @@
+[
+  {
+    "id": "E1",
+    "hypothesis": "H0",
+    "purpose": "dashboard vs backend gap by channel and device",
+    "sql": "WITH dash AS (\n  SELECT channel, device,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN signups ELSE 0 END) AS prior_signups,\n    SUM(CASE WHEN signup_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN signups ELSE 0 END) AS last_signups\n  FROM app_pg.trial_signups_daily\n  GROUP BY channel, device\n),\nbackend AS (\n  SELECT signup_channel AS channel, device,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS prior_signups,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS last_signups\n  FROM app_pg.accounts\n  GROUP BY signup_channel, device\n)\nSELECT COALESCE(d.channel, b.channel) AS channel,\n       COALESCE(d.device, b.device) AS device,\n       d.prior_signups AS dashboard_prior,\n       d.last_signups AS dashboard_last,\n       b.prior_signups AS backend_prior,\n       b.last_signups AS backend_last,\n       (d.last_signups - b.last_signups) AS last_week_gap,\n       (d.prior_signups - b.prior_signups) AS prior_week_gap\nFROM dash d\nFULL OUTER JOIN backend b ON d.channel = b.channel AND d.device = b.device\nORDER BY channel, device",
+    "columns": [
+      "channel",
+      "device",
+      "dashboard_prior",
+      "dashboard_last",
+      "backend_prior",
+      "backend_last",
+      "last_week_gap",
+      "prior_week_gap"
+    ],
+    "rows": [
+      [
+        "direct",
+        "desktop",
+        162,
+        163,
+        163,
+        170,
+        -7,
+        -1
+      ],
+      [
+        "direct",
+        "mobile",
+        109,
+        81,
+        110,
+        112,
+        -31,
+        -1
+      ],
+      [
+        "display",
+        "desktop",
+        26,
+        26,
+        26,
+        26,
+        0,
+        0
+      ],
+      [
+        "display",
+        "mobile",
+        18,
+        10,
+        19,
+        18,
+        -8,
+        -1
+      ],
+      [
+        "email",
+        "desktop",
+        106,
+        107,
+        107,
+        109,
+        -2,
+        -1
+      ],
+      [
+        "email",
+        "mobile",
+        70,
+        52,
+        71,
+        70,
+        -18,
+        -1
+      ],
+      [
+        "organic",
+        "desktop",
+        393,
+        369,
+        400,
+        380,
+        -11,
+        -7
+      ],
+      [
+        "organic",
+        "mobile",
+        250,
+        179,
+        255,
+        238,
+        -59,
+        -5
+      ],
+      [
+        "paid_search",
+        "desktop",
+        370,
+        270,
+        381,
+        276,
+        -6,
+        -11
+      ],
+      [
+        "paid_search",
+        "mobile",
+        239,
+        149,
+        249,
+        196,
+        -47,
+        -10
+      ],
+      [
+        "paid_social",
+        "desktop",
+        182,
+        174,
+        187,
+        176,
+        -2,
+        -5
+      ],
+      [
+        "paid_social",
+        "mobile",
+        120,
+        99,
+        121,
+        123,
+        -24,
+        -1
+      ],
+      [
+        "referral",
+        "desktop",
+        70,
+        62,
+        70,
+        63,
+        -1,
+        0
+      ],
+      [
+        "referral",
+        "mobile",
+        45,
+        30,
+        46,
+        43,
+        -13,
+        -1
+      ]
+    ],
+    "rowCount": 14,
+    "ms": 943,
+    "at": "2026-10-23T00:40:46.774Z"
+  },
+  {
+    "id": "E2",
+    "hypothesis": "H1",
+    "purpose": "ad platform changes during the two weeks",
+    "sql": "SELECT changed_at, campaign_id, change_type, old_value, new_value, changed_by\nFROM ads_pg.ad_change_log\nWHERE to_date(changed_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY changed_at",
+    "columns": [
+      "changed_at",
+      "campaign_id",
+      "change_type",
+      "old_value",
+      "new_value",
+      "changed_by"
+    ],
+    "rows": [
+      [
+        "2026-10-13 09:12:00.0",
+        101,
+        "daily_budget",
+        1200,
+        500,
+        "ops-bot (Q4 budget rebalance)"
+      ],
+      [
+        "2026-10-14 11:45:00.0",
+        201,
+        "creative",
+        "carousel_v3",
+        "video_v1",
+        "jordan.lee"
+      ]
+    ],
+    "rowCount": 2,
+    "ms": 207,
+    "at": "2026-10-23T00:40:47.718Z"
+  },
+  {
+    "id": "E3",
+    "hypothesis": "H1",
+    "purpose": "size paid spend and clicks change prior vs last week, incl campaigns 101 and 201",
+    "sql": "SELECT\n  SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN spend_usd ELSE 0 END) AS prior_spend_usd,\n  SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN spend_usd ELSE 0 END) AS last_spend_usd,\n  round((SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN spend_usd ELSE 0 END) - SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN spend_usd ELSE 0 END)) / nullif(SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN spend_usd ELSE 0 END),0), 3) AS spend_pct_change,\n  SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN clicks ELSE 0 END) AS prior_clicks,\n  SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN clicks ELSE 0 END) AS last_clicks,\n  round((SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN clicks ELSE 0 END) - SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN clicks ELSE 0 END)) / nullif(SUM(CASE WHEN spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN clicks ELSE 0 END),0), 3) AS clicks_pct_change,\n  SUM(CASE WHEN campaign_id = 101 AND spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN spend_usd ELSE 0 END) AS c101_prior_spend,\n  SUM(CASE WHEN campaign_id = 101 AND spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN spend_usd ELSE 0 END) AS c101_last_spend,\n  SUM(CASE WHEN campaign_id = 201 AND spend_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN spend_usd ELSE 0 END) AS c201_prior_spend,\n  SUM(CASE WHEN campaign_id = 201 AND spend_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN spend_usd ELSE 0 END) AS c201_last_spend\nFROM ads_pg.ad_spend_daily",
+    "columns": [
+      "prior_spend_usd",
+      "last_spend_usd",
+      "spend_pct_change",
+      "prior_clicks",
+      "last_clicks",
+      "clicks_pct_change",
+      "c101_prior_spend",
+      "c101_last_spend",
+      "c201_prior_spend",
+      "c201_last_spend"
+    ],
+    "rows": [
+      [
+        21556.18,
+        17211.53,
+        -0.202,
+        16690,
+        13377,
+        -0.199,
+        8132.45,
+        3935.9,
+        3037.56,
+        2989.75
+      ]
+    ],
+    "rowCount": 1,
+    "ms": 601,
+    "at": "2026-10-23T00:45:33.689Z"
+  },
+  {
+    "id": "E4",
+    "hypothesis": "H3",
+    "purpose": "pricing changes effective between the two weeks",
+    "sql": "SELECT plan, monthly_price_usd, effective_date\nFROM app_pg.pricing_history\nWHERE effective_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY effective_date, plan",
+    "columns": [
+      "plan",
+      "monthly_price_usd",
+      "effective_date"
+    ],
+    "rows": [],
+    "rowCount": 0,
+    "ms": 283,
+    "at": "2026-10-23T00:45:34.290Z"
+  },
+  {
+    "id": "E5",
+    "hypothesis": "H4",
+    "purpose": "Canadian holidays in prior vs last week",
+    "sql": "SELECT holiday_date, holiday_name, is_federal\nFROM whybot.ca_holidays\nWHERE holiday_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-18'\nORDER BY holiday_date",
+    "columns": [
+      "holiday_date",
+      "holiday_name",
+      "is_federal"
+    ],
+    "rows": [
+      [
+        "2026-10-12",
+        "Thanksgiving",
+        1
+      ]
+    ],
+    "rowCount": 1,
+    "ms": 534,
+    "at": "2026-10-23T00:45:34.573Z"
+  },
+  {
+    "id": "E6",
+    "hypothesis": "H5",
+    "purpose": "backend trial signups by channel and device prior vs last week to isolate non-paid real demand residual",
+    "sql": "WITH backend AS (\n  SELECT\n    signup_channel AS channel,\n    device,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 1 ELSE 0 END) AS prior_signups,\n    SUM(CASE WHEN to_date(created_at) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN 1 ELSE 0 END) AS last_signups\n  FROM app_pg.accounts\n  GROUP BY signup_channel, device\n)\nSELECT channel, device, prior_signups, last_signups,\n  (last_signups - prior_signups) AS diff,\n  ROUND(100.0 * (last_signups - prior_signups) / NULLIF(prior_signups, 0), 3) AS pct_change\nFROM backend\nORDER BY diff ASC\nLIMIT 50",
+    "columns": [
+      "channel",
+      "device",
+      "prior_signups",
+      "last_signups",
+      "diff",
+      "pct_change"
+    ],
+    "rows": [
+      [
+        "paid_search",
+        "desktop",
+        381,
+        276,
+        -105,
+        -27.559
+      ],
+      [
+        "paid_search",
+        "mobile",
+        249,
+        196,
+        -53,
+        -21.285
+      ],
+      [
+        "organic",
+        "desktop",
+        400,
+        380,
+        -20,
+        -5
+      ],
+      [
+        "organic",
+        "mobile",
+        255,
+        238,
+        -17,
+        -6.667
+      ],
+      [
+        "paid_social",
+        "desktop",
+        187,
+        176,
+        -11,
+        -5.882
+      ],
+      [
+        "referral",
+        "desktop",
+        70,
+        63,
+        -7,
+        -10
+      ],
+      [
+        "referral",
+        "mobile",
+        46,
+        43,
+        -3,
+        -6.522
+      ],
+      [
+        "email",
+        "mobile",
+        71,
+        70,
+        -1,
+        -1.408
+      ],
+      [
+        "display",
+        "mobile",
+        19,
+        18,
+        -1,
+        -5.263
+      ],
+      [
+        "display",
+        "desktop",
+        26,
+        26,
+        0,
+        0
+      ],
+      [
+        "email",
+        "desktop",
+        107,
+        109,
+        2,
+        1.869
+      ],
+      [
+        "direct",
+        "mobile",
+        110,
+        112,
+        2,
+        1.818
+      ],
+      [
+        "paid_social",
+        "mobile",
+        121,
+        123,
+        2,
+        1.653
+      ],
+      [
+        "direct",
+        "desktop",
+        163,
+        170,
+        7,
+        4.294
+      ]
+    ],
+    "rowCount": 14,
+    "ms": 266,
+    "at": "2026-10-23T00:47:49.336Z"
+  }
+]

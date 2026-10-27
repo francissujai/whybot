@@ -66,8 +66,8 @@ export default function App() {
     { id: "go-archive", label: "Archive", hint: "Go to", run: () => go("/app#archive") },
     ...EXAMPLES.map((q, i) => ({ id: `ask-${i}`, label: q, hint: "Investigate", run: () => investigate(q) })),
     ...(runs ?? []).flatMap((r) => [
-      ...(r.replay ? [{ id: `replay-${r.runId}`, label: r.question, hint: "Replay", run: () => go(`/replay/${r.runId}?speed=10`) }] : []),
-      { id: `report-${r.runId}`, label: r.question, hint: "Report", run: () => window.open(`/runs/${r.runId}/report.html`, "_blank") },
+      ...(r.replay ? [{ id: `replay-${r.runId}`, label: r.question, hint: r.sample ? "Replay (sample)" : "Replay", run: () => go(`/replay/${r.runId}?speed=10`) }] : []),
+      { id: `report-${r.runId}`, label: r.question, hint: r.sample ? "Report (sample)" : "Report", run: () => window.open(`/runs/${r.runId}/report.html`, "_blank") },
     ]),
   ], [go, investigate, runs]);
 

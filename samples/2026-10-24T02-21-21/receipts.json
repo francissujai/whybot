@@ -1,0 +1,162 @@
+[
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_rveiyxp1",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 14171
+    },
+    "usage": {
+      "promptTokens": 3234,
+      "completionTokens": 1186
+    },
+    "ms": 61263
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_vntuu5n7",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 105056
+    },
+    "usage": {
+      "promptTokens": 7616,
+      "completionTokens": 3626
+    },
+    "ms": 278843
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_ni5md3z6",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 37717
+    },
+    "usage": {
+      "promptTokens": 9057,
+      "completionTokens": 3447
+    },
+    "ms": 49112
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_94f5pgre",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 10727
+    },
+    "usage": {
+      "promptTokens": 4389,
+      "completionTokens": 1649
+    },
+    "ms": 10747
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_3ago5lwf",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 45014
+    },
+    "usage": {
+      "promptTokens": 4020,
+      "completionTokens": 2985
+    },
+    "ms": 45043
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_gi2oep9o",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 24736
+    },
+    "usage": {
+      "promptTokens": 8092,
+      "completionTokens": 4072
+    },
+    "ms": 204801
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_jn5omzyw",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 32990
+    },
+    "usage": {
+      "promptTokens": 9590,
+      "completionTokens": 2718
+    },
+    "ms": 54366
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_tf14etws",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 70688
+    },
+    "usage": {
+      "promptTokens": 8542,
+      "completionTokens": 6056
+    },
+    "ms": 70711
+  },
+  {
+    "purpose": "investigate",
+    "route": {
+      "receiptId": "rcpt_req_a5hurmch",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 39263
+    },
+    "usage": {
+      "promptTokens": 8519,
+      "completionTokens": 4556
+    },
+    "ms": 57303
+  },
+  {
+    "purpose": "report",
+    "route": {
+      "receiptId": "rcpt_req_65pbupk1",
+      "routedModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "label": "Nemotron 3.5 Super VL 120B A12B",
+      "provider": "nvidia",
+      "kind": "cloud",
+      "ms": 45008
+    },
+    "usage": {
+      "promptTokens": 3131,
+      "completionTokens": 2927
+    },
+    "ms": 126910
+  }
+]

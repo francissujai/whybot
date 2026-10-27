@@ -12,7 +12,8 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { env, ROOT } from "./env.ts";
-import { listRuns, RUNS_DIR, runSession, type SessionEvent } from "./agent/session.ts";
+import { listRuns, resolveRunFile } from "./agent/runs.ts";
+import { runSession, type SessionEvent } from "./agent/session.ts";
 import { PAGE } from "./ui/page.ts";
 
 // The React UI (web/, built with `npm run web:build`). Without a build the original single-page UI is served.
@@ -90,6 +91,9 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && url.pathname === "/api/status") {
       return json(res, 200, { running: running ? { id: running.id, question: running.question } : null, runs: listRuns().slice(0, 20) });
     }
+    if (req.method === "GET" && url.pathname === "/api/runs") {
+      return json(res, 200, { runs: listRuns() });
+    }
     if (req.method === "POST" && url.pathname === "/api/investigate") {
       const { question } = JSON.parse((await readBody(req)) || "{}") as { question?: string };
       const q = (question ?? "").trim();
@@ -114,8 +118,8 @@ const server = http.createServer(async (req, res) => {
     }
     const ev2 = url.pathname.match(/^\/runs\/([\dT-]{19})\/events\.jsonl$/);
     if (req.method === "GET" && ev2) {
-      const file = path.join(RUNS_DIR, ev2[1], "events.jsonl");
-      if (!fs.existsSync(file)) return json(res, 404, { error: "no saved events for this run" });
+      const file = resolveRunFile(ev2[1], "events.jsonl");
+      if (!file) return json(res, 404, { error: "no saved events for this run" });
       res.writeHead(200, { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" });
       return fs.createReadStream(file).pipe(res);
     }
@@ -125,8 +129,8 @@ const server = http.createServer(async (req, res) => {
     }
     const rep = url.pathname.match(/^\/runs\/([\dT-]{19})\/report\.html$/);
     if (req.method === "GET" && rep) {
-      const file = path.join(RUNS_DIR, rep[1], "report.html");
-      if (!fs.existsSync(file)) return json(res, 404, { error: "no report" });
+      const file = resolveRunFile(rep[1], "report.html");
+      if (!file) return json(res, 404, { error: "no report" });
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
       return fs.createReadStream(file).pipe(res);
     }

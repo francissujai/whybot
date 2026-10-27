@@ -4,7 +4,6 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT } from "../env.ts";
 import { MeterlessProvider, ReceiptLog } from "../llm/meterless.ts";
 import { ZetarisClient } from "../zetaris/client.ts";
 import { asOf } from "./catalog.ts";
@@ -13,7 +12,9 @@ import { investigate } from "./investigator.ts";
 import { learn, openMemory, recall } from "./memory.ts";
 import { checkCitations, renderHtml, writeReport } from "./report.ts";
 
-export const RUNS_DIR = path.join(ROOT, "runs");
+import { RUNS_DIR } from "./runs.ts";
+
+export { listRuns, RUNS_DIR } from "./runs.ts";
 
 export type SessionEvent =
   | { type: "start"; runId: string; question: string; model: string; provider: string }
@@ -88,20 +89,4 @@ export async function runSession(question: string, opts: { useMemory?: boolean; 
   emit({ type: "report", markdown: report, cited: check.cited.length, unknown: check.unknown.length, uncited: check.uncitedNumbers.length });
   emit({ ...base, status: inv.run.status, reportPath: path.join(dir, "report.html"), served: served() });
   return { runId, dir, inv, ok: inv.run.status === "completed" };
-}
-
-/** Past runs that produced a report, newest first. */
-export function listRuns(): { runId: string; question: string; replay: boolean }[] {
-  if (!fs.existsSync(RUNS_DIR)) return [];
-  return fs
-    .readdirSync(RUNS_DIR)
-    .filter((d) => fs.existsSync(path.join(RUNS_DIR, d, "report.html")))
-    .sort()
-    .reverse()
-    .map((runId) => {
-      const q = path.join(RUNS_DIR, runId, "question.txt");
-      const md = path.join(RUNS_DIR, runId, "report.md");
-      const question = fs.existsSync(q) ? fs.readFileSync(q, "utf-8") : (fs.readFileSync(md, "utf-8").match(/^# (.+)$/m)?.[1] ?? runId);
-      return { runId, question, replay: fs.existsSync(path.join(RUNS_DIR, runId, "events.jsonl")) };
-    });
 }
