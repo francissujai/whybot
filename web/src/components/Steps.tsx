@@ -30,7 +30,7 @@ export function Steps({ steps, running, active, onActive }: { steps: Step[]; run
               {s.calls.length > 0 && <div className="calls">{s.calls.map((c, i) => <div key={i}>{c.model ?? "model"}{c.kind ? ` (${c.kind})` : ""} answered in {c.seconds.toFixed(0)} s{c.error ? `, failed: ${c.error}` : ""}</div>)}</div>}
               {s.state && (
                 <details>
-                  <summary className="linklike small">State carried to the next step</summary>
+                  <summary className="summary-link">State carried to the next step</summary>
                   <pre className="state">{s.state}</pre>
                 </details>
               )}

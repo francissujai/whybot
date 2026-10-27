@@ -1,4 +1,5 @@
 import type { Case } from "../caseModel";
+import { Button } from "../ui/Button";
 import { formatClock } from "../caseModel";
 
 const LABEL = { idle: "Ready", queued: "Queued", running: "Investigating", done: "Finished", failed: "Failed" } as const;
@@ -24,7 +25,7 @@ export function CaseHead({ c, elapsed, replayMs, onRetry }: { c: Case; elapsed: 
         <div className="alert" role="alert">
           <b>The investigation did not finish.</b>
           <span>{c.error}</span>
-          {onRetry && <div style={{ marginTop: 8 }}><button className="btn sm quiet" onClick={onRetry}>Investigate again</button></div>}
+          {onRetry && <div style={{ marginTop: 8 }}><Button onClick={onRetry}>Investigate again</Button></div>}
         </div>
       )}
       {c.recalled.length > 0 && (

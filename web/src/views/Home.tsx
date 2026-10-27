@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../ui/Button";
 import type { RunInfo } from "../api";
 import { ArchiveList, ArchiveSkeleton } from "../components/Archive";
 import { Ask } from "../components/Ask";
@@ -40,7 +41,7 @@ export function Home({ question, setQuestion, live, runs, loadingRuns, onInvesti
           {loadingRuns && !runs ? <ArchiveSkeleton /> : runs && runs.length > 0 ? (
             <>
               <ArchiveList runs={runs} limit={4} onReplay={onReplay} onAskAgain={(q) => { setQuestion(q); window.scrollTo({ top: 0 }); }} />
-              {runs.length > 4 && <p style={{ margin: "12px 0 0" }}><button className="linklike" onClick={onArchive}>All {runs.length} cases</button></p>}
+              {runs.length > 4 && <p style={{ margin: "12px 0 0" }}><Button variant="tertiary" onClick={onArchive}>All {runs.length} cases</Button></p>}
             </>
           ) : <p className="muted small">Finished investigations are kept here with their report and a replay.</p>}
         </section>

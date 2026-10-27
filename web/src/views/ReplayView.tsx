@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Button } from "../ui/Button";
 import { api, runDate, type RunInfo } from "../api";
 import { caseAt, durationOf, formatClock, type TimedEvent } from "../caseModel";
 import { CaseView } from "../components/CaseView";
@@ -44,13 +45,13 @@ export function ReplayView({ id, speed: initialSpeed, runs, onArchive, onHome }:
         <span>{runDate(id)}</span><span aria-hidden>/</span><span aria-current="page">Replay</span>
       </nav>
       {error ? (
-        <div className="alert" role="alert" style={{ marginTop: 24 }}><b>This replay is not available.</b><span>{error}</span><div style={{ marginTop: 8 }}><button className="btn sm quiet" onClick={onHome}>Back to investigate</button></div></div>
+        <div className="alert" role="alert" style={{ marginTop: 24 }}><b>This replay is not available.</b><span>{error}</span><div style={{ marginTop: 8 }}><Button onClick={onHome}>Back to investigate</Button></div></div>
       ) : !items || !c ? (
         <div role="group" aria-busy="true" aria-label="Loading the recording" style={{ marginTop: 32, maxWidth: 680 }}><div className="sk title" /><div className="sk line" /><div className="sk line" style={{ width: "70%" }} /></div>
       ) : (
         <>
           <div className="player" role="group" aria-label="Replay controls">
-            <button className="btn sm" onClick={() => { if (t >= total) setT(0); setPlaying((p) => !p || t >= total); }}>{playing ? "Pause" : t >= total ? "Replay" : "Play"}</button>
+            <Button variant="primary" onClick={() => { if (t >= total) setT(0); setPlaying((p) => !p || t >= total); }}>{playing ? "Pause" : t >= total ? "Replay" : "Play"}</Button>
             <input type="range" min={0} max={total} step={100} value={t} aria-label="Position in the recording" aria-valuetext={`${formatClock(t)} of ${formatClock(total)}`}
               onChange={(e) => { setPlaying(false); setT(Number(e.target.value)); }} />
             <div className="speeds" role="group" aria-label="Playback speed">

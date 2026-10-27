@@ -20,7 +20,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="toasts" role="status" aria-live="polite">
         <AnimatePresence initial={false}>
           {toasts.map((t) => (
-            <m.div key={t.id} className={`toast ${t.ok ? "" : "err"}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={FADE}>
+            <m.div key={t.id} className={`toast ${t.ok ? "" : "err"}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={FADE}>
               <span>{t.msg}</span>
               <button onClick={() => setToasts((x) => x.filter((y) => y.id !== t.id))} aria-label="Dismiss">×</button>
             </m.div>

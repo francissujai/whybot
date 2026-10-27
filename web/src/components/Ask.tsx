@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Button } from "../ui/Button";
 
 export const EXAMPLES = [
   "Why did trial signups drop 18% last week?",
@@ -21,11 +22,11 @@ export function Ask({ value, onChange, onSubmit, busy, showExamples }: { value: 
         onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && valid && !busy) { e.preventDefault(); onSubmit(); } }} aria-describedby="ask-help" />
       <div className="ask-foot">
         <span id="ask-help" className="count">{len < MIN && len > 0 ? `${MIN - len} more characters needed` : `${len} of ${MAX}`}</span>
-        <button className="btn" type="submit" disabled={!valid || busy}>{busy && <span className="spinner" aria-hidden />}{busy ? "Investigating" : "Investigate"}</button>
+        <Button variant="primary" type="submit" disabled={!valid || busy}>{busy && <span className="spinner" aria-hidden />}{busy ? "Investigating" : "Investigate"}</Button>
       </div>
       {showExamples && (
         <ul className="examples" aria-label="Example questions">
-          {EXAMPLES.map((q) => <li key={q}><button type="button" onClick={() => onChange(q)}>{q}</button></li>)}
+          {EXAMPLES.map((q) => <li key={q}><Button variant="tertiary" onClick={() => onChange(q)}>{q}</Button></li>)}
         </ul>
       )}
     </form>

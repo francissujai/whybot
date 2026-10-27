@@ -5,6 +5,8 @@ import { EXAMPLES } from "./components/Ask";
 import { Palette, type Command } from "./components/Palette";
 import { useRoute } from "./router";
 import { ThemeButton } from "./theme";
+import { Button } from "./ui/Button";
+import { MenuSheet } from "./ui/MenuSheet";
 import { Landing } from "./landing/Landing";
 import { content as landingContent } from "./landing/content";
 import { useToast } from "./toasts";
@@ -20,6 +22,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [question, setQuestion] = useState("");
   const [palette, setPalette] = useState(false);
+  const [menu, setMenu] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -69,19 +72,34 @@ export default function App() {
 
   const view = route.name === "replay" ? "replay" : route.name === "archive" ? "archive" : "home";
   if (route.name === "landing") return <Landing c={landingContent} open={go} />;
+  const sections = [
+    { label: "Investigate", to: "/app", current: view === "home" },
+    { label: "Archive", to: "/app#archive", current: view === "archive" },
+  ];
 
   return (
-    <div className="frame">
-      <header className="topbar">
-        <button className="brand" onClick={() => go("/app")}>WhyBot</button>
-        <nav className="nav" aria-label="Sections">
-          <button aria-current={view === "home" ? "page" : undefined} onClick={() => go("/app")}>Investigate</button>
-          <button aria-current={view === "archive" ? "page" : undefined} onClick={() => go("/app#archive")}>Archive</button>
+    <>
+    <header className="appbar">
+      <div className="appbar-in">
+        <a className="wordmark" href="/app" onClick={(e) => { e.preventDefault(); go("/app"); }}>WhyBot</a>
+        <nav className="bar-links app-links" aria-label="Sections">
+          {sections.map((s) => <a key={s.to} href={s.to} aria-current={s.current ? "page" : undefined} onClick={(e) => { e.preventDefault(); go(s.to); }}>{s.label}</a>)}
         </nav>
         <span className="spacer" />
-        <ThemeButton className="btn sm quiet" />
-        <button className="btn sm quiet" onClick={() => setPalette(true)}>Search <span className="kbd hide-sm">Ctrl K</span></button>
-      </header>
+        <div className="appbar-end">
+          <Button variant="tertiary" onClick={() => setPalette(true)}>Search <span className="kbd">Ctrl K</span></Button>
+          <ThemeButton />
+          <button type="button" className="menu-toggle" aria-expanded={menu} onClick={() => setMenu(true)}>Menu</button>
+        </div>
+      </div>
+    </header>
+    {menu && (
+      <MenuSheet title="WhyBot" onClose={() => setMenu(false)} links={sections.map((s) => ({ label: s.label, href: s.to, current: s.current, onSelect: () => go(s.to) }))}>
+        <Button onClick={() => { setMenu(false); setPalette(true); }}>Search</Button>
+        <ThemeButton />
+      </MenuSheet>
+    )}
+    <div className="frame">
       <main id="main">
         {route.name === "home" && (
           <Home question={question} setQuestion={setQuestion} live={live} runs={runs} loadingRuns={loading} onInvestigate={() => investigate()}
@@ -96,5 +114,6 @@ export default function App() {
       </main>
       <AnimatePresence>{palette && <Palette commands={commands} onClose={() => setPalette(false)} />}</AnimatePresence>
     </div>
+    </>
   );
 }

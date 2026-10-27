@@ -1,6 +1,6 @@
 import { AnimatePresence, LayoutGroup, m } from "motion/react";
 import type { Hypothesis, Verdict } from "../caseModel";
-import { FADE, SPRING } from "../motion";
+import { FADE, MOVE } from "../motion";
 import { Ref } from "./Ref";
 
 type Lane = "tested" | Verdict;
@@ -28,7 +28,7 @@ export function Board({ hypotheses, active, onActive, judged }: { hypotheses: Hy
               <div className="cards">
                 <AnimatePresence initial={false}>
                   {cards.map((h) => (
-                    <m.article key={h.key} layout="position" layoutId={`h-${h.key}`} className="card" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ layout: SPRING, ...FADE }}>
+                    <m.article key={h.key} layout="position" layoutId={`h-${h.key}`} className="card" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ layout: MOVE, ...FADE }}>
                       <b>{h.name}</b>
                       <p className="p">{h.purposes[0]}{h.purposes.length > 1 ? ` and ${h.purposes.length - 1} more` : ""}. {h.rows} rows.</p>
                       <div className="chips">{h.evidence.map((id) => <Ref key={id} id={id} active={active === id} onToggle={() => onActive(active === id ? null : id)} />)}</div>

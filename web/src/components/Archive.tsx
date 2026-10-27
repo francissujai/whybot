@@ -1,4 +1,5 @@
 import { runDate, type RunInfo } from "../api";
+import { Button } from "../ui/Button";
 
 /** Past cases, newest first. Each has its report and, when events were saved, a replay. */
 export function ArchiveList({ runs, limit, onReplay, onAskAgain }: { runs: RunInfo[]; limit?: number; onReplay: (id: string) => void; onAskAgain: (q: string) => void }) {
@@ -12,7 +13,7 @@ export function ArchiveList({ runs, limit, onReplay, onAskAgain }: { runs: RunIn
           <div className="acts">
             <a href={`/runs/${r.runId}/report.html`} target="_blank" rel="noreferrer">Report</a>
             {r.replay && <a href={`/replay/${r.runId}?speed=10`} onClick={(e) => { e.preventDefault(); onReplay(r.runId); }}>Replay</a>}
-            <button className="linklike" onClick={() => onAskAgain(r.question)}>Ask again</button>
+            <Button variant="tertiary" onClick={() => onAskAgain(r.question)}>Ask again</Button>
           </div>
         </li>
       ))}
