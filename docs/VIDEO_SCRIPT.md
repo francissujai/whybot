@@ -25,7 +25,7 @@
 
 ```powershell
 # start: primary monitor, 30 fps, crash-safe mkv
-ffmpeg -y -f gdigrab -framerate 30 -offset_x 0 -offset_y 0 -video_size 1920x1080 -draw_mouse 1 -i desktop -c:v libx264 -preset ultrafast -crf 20 -pix_fmt yuv420p C:\Users\afsuj\Desktop\work\video\raw.mkv
+ffmpeg -y -f gdigrab -framerate 30 -offset_x 0 -offset_y 0 -video_size 1920x1080 -draw_mouse 1 -i desktop -c:v libx264 -preset ultrafast -crf 20 -pix_fmt yuv420p raw.mkv
 # stop: press q in that window
 ```
 
