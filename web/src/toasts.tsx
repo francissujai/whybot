@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, m } from "motion/react";
-import { FADE } from "./motion";
+import { NUDGE, T_BASE } from "./motion";
 
 interface Toast { id: number; msg: string; ok: boolean }
 const Ctx = createContext<(msg: string, ok?: boolean) => void>(() => {});
@@ -20,7 +20,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="toasts" role="status" aria-live="polite">
         <AnimatePresence initial={false}>
           {toasts.map((t) => (
-            <m.div key={t.id} className={`toast ${t.ok ? "" : "err"}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={FADE}>
+            <m.div layout key={t.id} className={`toast ${t.ok ? "" : "err"}`} initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}>
               <span>{t.msg}</span>
               <button onClick={() => setToasts((x) => x.filter((y) => y.id !== t.id))} aria-label="Dismiss">×</button>
             </m.div>

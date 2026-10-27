@@ -6,7 +6,7 @@
   min-height: var(--btn-h, var(--ds-btn-app)); padding: 0 var(--ds-s-4); margin: 0;
   border: 1px solid transparent; border-radius: var(--ds-r-button); background: transparent;
   font: 500 var(--ds-t-button)/1.2 var(--ds-font); letter-spacing: 0; text-decoration: none; white-space: nowrap; cursor: pointer;
-  transition: background-color var(--ds-dur-hover) var(--ds-ease-out), border-color var(--ds-dur-hover) var(--ds-ease-out), color var(--ds-dur-hover) var(--ds-ease-out);
+  transition: background-color var(--ds-dur-fast) var(--ds-ease-ui), border-color var(--ds-dur-fast) var(--ds-ease-ui), color var(--ds-dur-fast) var(--ds-ease-ui);
 }
 .btn:focus-visible { outline: 2px solid var(--ds-accent-text); outline-offset: 2px; }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
@@ -40,10 +40,13 @@ a.wordmark:hover { color: var(--ds-text); text-decoration: none; }
 .bar-links a, .bar-links button {
   display: inline-flex; align-items: center; gap: var(--ds-s-2); min-height: 40px; padding: 0; border: 0; background: none; cursor: pointer;
   font: 500 var(--ds-t-nav)/1 var(--ds-font); color: var(--ds-text-2); text-decoration: none; white-space: nowrap;
-  transition: color var(--ds-dur-hover) var(--ds-ease-out);
+  transition: color var(--ds-dur-fast) var(--ds-ease-ui);
 }
 .bar-links a:hover, .bar-links button:hover { color: var(--ds-text); text-decoration: none; }
-.bar-links [aria-current] { color: var(--ds-text); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
+.bar-links a, .bar-links button { position: relative; }
+.bar-links [aria-current] { color: var(--ds-text); }
+/* the current-page underline is one element that glides between links (layoutId) */
+.nav-underline { position: absolute; left: 0; right: 0; bottom: 9px; height: 1px; background: currentColor; }
 .bar-links :focus-visible, .menu-toggle:focus-visible, .wordmark:focus-visible { outline: 2px solid var(--ds-accent-text); outline-offset: 2px; border-radius: 2px; }
 .menu-toggle { display: none; align-items: center; min-height: 40px; padding: 0; border: 0; background: none; cursor: pointer; font: 500 var(--ds-t-nav)/1 var(--ds-font); color: var(--ds-text); }
 

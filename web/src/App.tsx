@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
+import { PAGE, SPRING } from "./motion";
 import { api, type Status } from "./api";
 import { EXAMPLES } from "./components/Ask";
 import { Palette, type Command } from "./components/Palette";
@@ -83,7 +84,7 @@ export default function App() {
       <div className="appbar-in">
         <a className="wordmark" href="/app" onClick={(e) => { e.preventDefault(); go("/app"); }}>WhyBot</a>
         <nav className="bar-links app-links" aria-label="Sections">
-          {sections.map((s) => <a key={s.to} href={s.to} aria-current={s.current ? "page" : undefined} onClick={(e) => { e.preventDefault(); go(s.to); }}>{s.label}</a>)}
+          {sections.map((s) => <a key={s.to} href={s.to} aria-current={s.current ? "page" : undefined} onClick={(e) => { e.preventDefault(); go(s.to); }}>{s.label}{s.current && <m.span layoutId="nav-underline" className="nav-underline" transition={SPRING} />}</a>)}
         </nav>
         <span className="spacer" />
         <div className="appbar-end">
@@ -93,14 +94,16 @@ export default function App() {
         </div>
       </div>
     </header>
+    <AnimatePresence>
     {menu && (
       <MenuSheet title="WhyBot" onClose={() => setMenu(false)} links={sections.map((s) => ({ label: s.label, href: s.to, current: s.current, onSelect: () => go(s.to) }))}>
         <Button onClick={() => { setMenu(false); setPalette(true); }}>Search</Button>
         <ThemeButton />
       </MenuSheet>
     )}
+    </AnimatePresence>
     <div className="frame">
-      <main id="main">
+      <m.main id="main" key={view} {...PAGE}>
         {route.name === "home" && (
           <Home question={question} setQuestion={setQuestion} live={live} runs={runs} loadingRuns={loading} onInvestigate={() => investigate()}
             onReplay={(id) => go(`/replay/${id}?speed=10`)} onArchive={() => go("/app#archive")} />
@@ -111,7 +114,7 @@ export default function App() {
         {route.name === "replay" && (
           <ReplayView key={route.id} id={route.id} speed={route.speed} runs={runs} onArchive={() => go("/app#archive")} onHome={() => go("/app")} />
         )}
-      </main>
+      </m.main>
       <AnimatePresence>{palette && <Palette commands={commands} onClose={() => setPalette(false)} />}</AnimatePresence>
     </div>
     </>

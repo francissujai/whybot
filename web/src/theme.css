@@ -7,8 +7,8 @@
   --s1: var(--ds-s-1); --s2: var(--ds-s-2); --s3: var(--ds-s-3); --s4: var(--ds-s-4); --s5: var(--ds-s-5); --s6: var(--ds-s-6); --s7: var(--ds-s-7); --s8: var(--ds-s-8);
   --r-card: var(--ds-r-card); --r-control: var(--ds-r-button); --r-sheet: var(--ds-r-panel);
   --measure: 680px; --margin-col: 300px; --content: 1180px;
-  --dur-fast: var(--ds-dur-hover); --dur: var(--ds-dur-panel); --dur-slow: 360ms;
-  --ease: var(--ds-ease-out);
+  --dur-fast: var(--ds-dur-fast); --dur: var(--ds-dur-base); --dur-slow: 360ms;
+  --ease: var(--ds-ease-ui);
 
   --page: var(--ds-bg); --sheet: var(--ds-surface-1); --field: var(--ds-surface-1);
   --ink: var(--ds-text); --ink-2: var(--ds-text-2); --ink-3: var(--ds-text-2);

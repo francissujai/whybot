@@ -1,4 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { m } from "motion/react";
+import { NUDGE, T_BASE } from "../motion";
 
 /** The phone menu: a full-screen sheet with large links. Escape or Close shuts it and focus goes back to the Menu button. */
 export function MenuSheet({ title, onClose, links, children }: {
@@ -22,7 +24,7 @@ export function MenuSheet({ title, onClose, links, children }: {
   }, []);
 
   return (
-    <div className="menu-sheet" role="dialog" aria-modal="true" aria-label={title} ref={ref}>
+    <m.div className="menu-sheet" role="dialog" aria-modal="true" aria-label={title} ref={ref} initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}>
       <div className="menu-sheet-top">
         <span className="wordmark">{title}</span>
         <button type="button" className="menu-toggle" onClick={onClose}>Close</button>
@@ -34,6 +36,6 @@ export function MenuSheet({ title, onClose, links, children }: {
         ))}
       </nav>
       {children && <div className="menu-sheet-extra">{children}</div>}
-    </div>
+    </m.div>
   );
 }

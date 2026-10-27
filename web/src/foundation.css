@@ -53,9 +53,10 @@
   --ds-bar-marketing: 64px; --ds-bar-app: 56px;
   --ds-btn-marketing: 48px; --ds-btn-app: 40px;
 
-  /* motion: fades and layout changes only, 150 to 250 ms, ease-out. Breakpoints: 375 (base), 768, 1009, 1440 */
-  --ds-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ds-dur-hover: 150ms; --ds-dur-app: 200ms; --ds-dur-panel: 250ms;
+  /* motion: durations 150 / 250 / 400 / 700 ms and two curves; the same values live in src/motion/tokens.ts.
+     Breakpoints: 375 (base), 768, 1009, 1440 */
+  --ds-ease-enter: cubic-bezier(0.22, 1, 0.36, 1); --ds-ease-ui: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-dur-fast: 150ms; --ds-dur-base: 250ms; --ds-dur-slow: 400ms; --ds-dur-reveal: 700ms;
   /* product accent: focus rings, links, active navigation and status only */
   --ds-accent: #FFE14D; --ds-accent-hover: #FFD91A; --ds-on-accent: #06080C;
 }

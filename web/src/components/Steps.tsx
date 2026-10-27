@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { AnimatePresence, m } from "motion/react";
+import { NUDGE, T_BASE } from "../motion";
 import type { Step } from "../caseModel";
 import { Ref } from "./Ref";
 
@@ -9,11 +11,12 @@ export function Steps({ steps, running, active, onActive }: { steps: Step[]; run
   const last = steps.length;
   return (
     <div className="steps">
+      <AnimatePresence initial={false}>
       {steps.map((s) => {
         const seconds = s.calls.reduce((a, c) => a + c.seconds, 0);
         const open = openByUser[s.step] ?? (running && s.step === last);
         return (
-          <details key={s.step} className="step" open={open} onToggle={(e) => { const o = (e.currentTarget as HTMLDetailsElement).open; if (o !== open) setOpen((x) => ({ ...x, [s.step]: o })); }}>
+          <m.details key={s.step} className="step" initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} transition={T_BASE} open={open} onToggle={(e) => { const o = (e.currentTarget as HTMLDetailsElement).open; if (o !== open) setOpen((x) => ({ ...x, [s.step]: o })); }}>
             <summary>
               <span className="n">Step {s.step}</span>
               <span>{s.evidence.length ? s.evidence.map((e) => e.hypothesis).filter((v, i, a) => a.indexOf(v) === i).join(", ") : "Model call"}</span>
@@ -35,9 +38,10 @@ export function Steps({ steps, running, active, onActive }: { steps: Step[]; run
                 </details>
               )}
             </div>
-          </details>
+          </m.details>
         );
       })}
+      </AnimatePresence>
     </div>
   );
 }

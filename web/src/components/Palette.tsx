@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import { m } from "motion/react";
-import { FADE_FAST } from "../motion";
+import { NUDGE, SPRING, T_BASE, T_FAST } from "../motion";
 
 export interface Command { id: string; label: string; hint: string; run: () => void }
 
@@ -16,8 +16,9 @@ export function Palette({ commands, onClose }: { commands: Command[]; onClose: (
   const pick = (c?: Command) => { if (!c) return; onClose(); c.run(); };
 
   return (
-    <m.div className="palette-wrap" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={FADE_FAST} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <m.div className="palette" role="dialog" aria-modal="true" aria-label="Command palette" transition={FADE_FAST}>
+    <m.div className="palette-wrap" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={T_BASE} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <m.div className="palette" role="dialog" aria-modal="true" aria-label="Command palette"
+        initial={{ opacity: 0, y: -NUDGE, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ ...SPRING, opacity: T_FAST }}>
         <input autoFocus placeholder="Search cases, sections and example questions" value={q} aria-label="Search" role="combobox" aria-expanded aria-controls="palette-list"
           aria-activedescendant={shown[sel] ? `cmd-${shown[sel].id}` : undefined} onChange={(e) => { setQ(e.target.value); setSel(0); }}
           onKeyDown={(e) => {

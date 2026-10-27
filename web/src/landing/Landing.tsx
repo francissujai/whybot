@@ -1,6 +1,11 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
+import { m, useMotionValueEvent, useScroll } from "motion/react";
 import { ButtonLink } from "../ui/Button";
 import { ThemeButton } from "../theme";
+import { Reveal, T_BASE, useLenis, WordReveal } from "../motion";
+import { Hero3D } from "./Hero3D";
+import { Scrollytelling, type Step } from "./Scrollytelling";
+import type { Scene } from "./hero-types";
 import "./landing.css";
 
 export interface LandingContent {
@@ -10,84 +15,90 @@ export interface LandingContent {
   /** Instrument Serif headline. It may hold the page's one italic word (<em>). */
   headline: ReactNode;
   lede: string;
-  /** A framed view of the real app beside the headline. Leave it out for a typographic hero. */
-  preview?: (data?: number[]) => ReactNode;
-  previewLabel?: string;
+  /** the hero object: which scene, its accent colour (bright, it sits on a dark body), a label for assistive tech and one line on how its form follows the product */
+  scene: Scene;
+  accent: string;
+  heroLabel: string;
+  heroCaption: string;
   facts: { title: string; body: string }[];
   capsTitle: string;
   capsLede: string;
   capabilities: { title: string; body: string }[];
   why: string;
-  pillarsTitle: string;
-  pillars: { title: string; body: string; preview: ReactNode }[];
+  storyTitle: string;
+  story: Step[];
+  /** the pinned view; it shows the product in the state of the current step */
+  storyView: (step: number) => ReactNode;
   closing: string;
   footer: string;
 }
 
-const SECTIONS = [["What it does", "capabilities"], ["Why", "why"], ["Product", "product"]] as const;
-
 /** The product landing page. `open` goes to an app URL without a page load. */
 export function Landing({ c, open, data }: { c: LandingContent; open: (to: string) => void; data?: number[] }) {
+  useLenis();
+  const hero = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroProgress } = useScroll({ target: hero, offset: ["start start", "end start"] });
+  const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
-  const [pillar, setPillar] = useState(0);
+  const [hidden, setHidden] = useState(false);
 
-  // the top bar gets its rule once the page scrolls
-  useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 4);
-    on();
-    window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
-  }, []);
+  // the top bar gains a rule and a slight background once the page scrolls, hides on the way down and returns on the way up
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    setScrolled(y > 4);
+    if (y > prev && y > 160) setHidden(true);
+    else if (y < prev) setHidden(false);
+  });
 
   const go = (to: string) => (e: React.MouseEvent) => { e.preventDefault(); open(to); };
 
   return (
     <div className="lp">
       <a className="sr-only skip" href="#capabilities">Skip to content</a>
-      <header className={`lp-nav${scrolled ? " is-scrolled" : ""}`}>
+      <m.header className={`lp-nav${scrolled ? " is-scrolled" : ""}`} initial={false} animate={{ y: hidden ? "-100%" : 0 }} transition={T_BASE} onFocusCapture={() => setHidden(false)}>
         <div className="lp-nav-in">
           <a className="wordmark" href="/" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0 }); }}>{c.product}</a>
           <span className="lp-tagline">{c.tagline}</span>
           <a className="lp-nav-app" href="/app" onClick={go("/app")}>Open the app <span aria-hidden="true">→</span></a>
         </div>
-      </header>
+      </m.header>
 
       <main>
-        <section className={`lp-hero${c.preview ? " has-preview" : ""}`} aria-labelledby="lp-h1">
+        <section className="lp-hero" ref={hero} aria-labelledby="lp-h1">
           <div className="lp-wrap lp-hero-in">
             <div className="lp-hero-copy">
-              <h1 className="lp-display" id="lp-h1">{c.headline}</h1>
-              <p className="lp-lede">{c.lede}</p>
-              <ButtonLink variant="primary" href="/app" onClick={go("/app")}>Open the app</ButtonLink>
+              <Reveal immediate as="h1" className="lp-display"><span id="lp-h1">{c.headline}</span></Reveal>
+              <Reveal immediate delay={0.12} as="p" className="lp-lede">{c.lede}</Reveal>
+              <Reveal immediate delay={0.24}><ButtonLink variant="primary" href="/app" onClick={go("/app")}>Open the app</ButtonLink></Reveal>
             </div>
-            {c.preview && <figure className="lp-frame" aria-label={c.previewLabel}>{c.preview(data)}</figure>}
+            <Hero3D scene={c.scene} accent={c.accent} data={data} progress={heroProgress} label={c.heroLabel} caption={c.heroCaption} />
           </div>
         </section>
 
         <section className="lp-facts" aria-label="Facts">
           <div className="lp-wrap">
-            {c.facts.map((f) => (
-              <div key={f.title}>
+            {c.facts.map((f, i) => (
+              <Reveal key={f.title} delay={i * 0.08}>
                 <h2>{f.title}</h2>
                 <p>{f.body}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
 
         <section className="lp-section" id="capabilities" aria-labelledby="lp-caps">
           <div className="lp-wrap">
-            <div className="lp-head">
+            <Reveal className="lp-head">
               <h2 className="lp-title" id="lp-caps">{c.capsTitle}</h2>
               <p>{c.capsLede}</p>
-            </div>
+            </Reveal>
             <ol className="lp-caps">
               {c.capabilities.map((cap, i) => (
-                <li key={cap.title}>
+                <Reveal key={cap.title} as="li">
                   <span className="n">{i + 1}</span>
                   <h3>{cap.title}</h3>
                   <p>{cap.body}</p>
-                </li>
+                </Reveal>
               ))}
             </ol>
           </div>
@@ -95,44 +106,17 @@ export function Landing({ c, open, data }: { c: LandingContent; open: (to: strin
 
         <section className="lp-section lp-why" id="why" aria-label="Why it exists">
           <div className="lp-wrap">
-            <p className="lp-statement">{c.why}</p>
+            <WordReveal className="lp-statement" text={c.why} />
           </div>
         </section>
 
-        <section className="lp-section" id="product" aria-labelledby="lp-product">
-          <div className="lp-wrap">
-            <div className="lp-head"><h2 className="lp-title" id="lp-product">{c.pillarsTitle}</h2></div>
-            <div className="lp-pillars">
-              <div className="lp-plist" role="tablist" aria-label={c.pillarsTitle} aria-orientation="vertical"
-                onKeyDown={(e) => {
-                  if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
-                  e.preventDefault();
-                  const n = (pillar + (e.key === "ArrowDown" ? 1 : c.pillars.length - 1)) % c.pillars.length;
-                  setPillar(n);
-                  e.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]")[n]?.focus();
-                }}>
-                {c.pillars.map((p, i) => (
-                  <button key={p.title} type="button" role="tab" id={`lp-tab-${i}`} aria-selected={i === pillar} aria-controls={`lp-panel-${i}`}
-                    tabIndex={i === pillar ? 0 : -1} onClick={() => setPillar(i)}>
-                    <strong>{p.title}</strong>
-                    <span>{p.body}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="lp-frame lp-panels">
-                {c.pillars.map((p, i) => (
-                  <div key={p.title} role="tabpanel" id={`lp-panel-${i}`} aria-labelledby={`lp-tab-${i}`} hidden={i !== pillar}>{p.preview}</div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        <Scrollytelling id="product" title={c.storyTitle} steps={c.story} view={c.storyView} />
 
         <section className="lp-section lp-close" aria-labelledby="lp-close">
-          <div className="lp-wrap">
+          <Reveal className="lp-wrap">
             <h2 className="lp-title" id="lp-close">{c.closing}</h2>
             <ButtonLink variant="primary" href="/app" onClick={go("/app")}>Open the app</ButtonLink>
-          </div>
+          </Reveal>
         </section>
       </main>
 
@@ -140,10 +124,7 @@ export function Landing({ c, open, data }: { c: LandingContent; open: (to: strin
         <div className="lp-wrap">
           <span>{c.footer}</span>
           <div className="lp-foot-end">
-            <nav className="bar-links" aria-label="Footer">
-              <a href="/app" onClick={go("/app")}>App</a>
-              {SECTIONS.map(([label, id]) => <a key={id} href={`#${id}`}>{label}</a>)}
-            </nav>
+            <nav className="bar-links" aria-label="Footer"><a href="/app" onClick={go("/app")}>App</a></nav>
             <ThemeButton />
           </div>
         </div>

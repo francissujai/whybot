@@ -1,13 +1,16 @@
+import { AnimatePresence, m } from "motion/react";
 import { runDate, type RunInfo } from "../api";
+import { NUDGE, T_BASE } from "../motion";
 import { Button } from "../ui/Button";
 
 /** Past cases, newest first. Each has its report and, when events were saved, a replay. */
 export function ArchiveList({ runs, limit, onReplay, onAskAgain }: { runs: RunInfo[]; limit?: number; onReplay: (id: string) => void; onAskAgain: (q: string) => void }) {
   const shown = limit ? runs.slice(0, limit) : runs;
   return (
-    <ul className="runs">
+    <m.ul className="runs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={T_BASE}>
+      <AnimatePresence initial={false}>
       {shown.map((r) => (
-        <li className="run" key={r.runId}>
+        <m.li layout className="run" key={r.runId} initial={{ opacity: 0, y: NUDGE }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_BASE}>
           <span className="q">{r.question}</span>
           <div className="date">{runDate(r.runId)}</div>
           <div className="acts">
@@ -15,9 +18,10 @@ export function ArchiveList({ runs, limit, onReplay, onAskAgain }: { runs: RunIn
             {r.replay && <a href={`/replay/${r.runId}?speed=10`} onClick={(e) => { e.preventDefault(); onReplay(r.runId); }}>Replay</a>}
             <Button variant="tertiary" onClick={() => onAskAgain(r.question)}>Ask again</Button>
           </div>
-        </li>
+        </m.li>
       ))}
-    </ul>
+      </AnimatePresence>
+    </m.ul>
   );
 }
 
