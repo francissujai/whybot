@@ -21,6 +21,14 @@
 .btn-secondary:hover:not(:disabled) { background: var(--ds-fill); }
 .btn-secondary:active:not(:disabled) { background: var(--ds-fill-2); }
 
+/* destructive actions (cancel, deny, reject): same shapes, in the danger colour */
+.btn-secondary.btn-danger { border-color: var(--ds-danger); color: var(--ds-danger); }
+.btn-secondary.btn-danger:hover:not(:disabled) { background: var(--ds-danger-bg); }
+.btn-secondary.btn-danger:active:not(:disabled) { background: color-mix(in oklab, var(--ds-danger-bg), var(--ds-danger) 12%); }
+.btn-primary.btn-danger { background: var(--ds-danger); border-color: var(--ds-danger); color: var(--ds-bg); }
+.btn-primary.btn-danger:hover:not(:disabled) { background: color-mix(in oklab, var(--ds-danger), var(--ds-text) 15%); border-color: color-mix(in oklab, var(--ds-danger), var(--ds-text) 15%); }
+.btn-primary.btn-danger:active:not(:disabled) { background: color-mix(in oklab, var(--ds-danger), var(--ds-text) 28%); border-color: color-mix(in oklab, var(--ds-danger), var(--ds-text) 28%); }
+
 .btn-tertiary { min-height: 0; padding: 0; border: 0; border-radius: 2px; color: var(--ds-accent-text); text-underline-offset: 3px; }
 .btn-tertiary:hover:not(:disabled) { text-decoration: underline; text-decoration-thickness: 1px; }
 .btn-tertiary:active:not(:disabled) { color: var(--ds-text); }
