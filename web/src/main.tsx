@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import "./foundation.css";
+import "./ui/controls.css";
 import "./theme.css";
 import App from "./App";
 import { ToastProvider } from "./toasts";

@@ -2,18 +2,16 @@ import type { LandingContent } from "./Landing";
 
 const lane = (c: string) => ({ "--c": c }) as React.CSSProperties;
 
+// Typographic hero: the product is a question, so the page leads with it and shows no visual.
 export const content: LandingContent = {
   product: "WhyBot",
-  eyebrow: "Metric investigation agent",
-  cycle: ["Test", "Check", "Explain"],
-  rest: " why a number moved.",
-  statement: "Ask about a metric. WhyBot tests competing explanations against your data and shows the query behind every number.",
+  headline: <>Find out <em>why</em> your number moved.</>,
+  lede: "Ask about a metric. WhyBot tests competing explanations against your data and cites the query behind every number in its answer.",
   facts: [
     { title: "Read-only SQL", body: "A guard refuses writes and multi-statement queries before they reach Zetaris." },
     { title: "Every number cited", body: "Figures in the finding link to the query and the rows that produced them." },
     { title: "Bounded, checkpointed steps", body: "Investigations run in chunks on Meterless, so each step can be followed and replayed." },
   ],
-  capsEyebrow: "What it does",
   capsTitle: "From a question to a cited answer.",
   capsLede: "Each investigation runs as short steps you can follow while it works.",
   capabilities: [
@@ -23,9 +21,7 @@ export const content: LandingContent = {
     { title: "Rule causes in or out", body: "Confirmed, a measurement problem, or ruled out, with the evidence for each." },
     { title: "Write a cited finding", body: "Every number in the answer links to the query and rows behind it." },
   ],
-  interludeEyebrow: "Why it exists",
-  interlude: "When a number drops, everyone has a theory. WhyBot tests each one against the data, keeps the evidence, and tells you which story survived.",
-  pillarsEyebrow: "The product",
+  why: "When a number drops, everyone has a theory. WhyBot tests each one against the data, keeps the evidence, and tells you which story survived.",
   pillarsTitle: "Hypotheses, evidence, a finding.",
   pillars: [
     {
@@ -47,7 +43,7 @@ export const content: LandingContent = {
         <>
           <div className="pv-head"><span className="pv-title">Evidence</span><span className="pv-dot" style={lane("var(--ds-accent-text)")}>5 queries</span></div>
           {[["E1", "Trial signups this week vs last week", "14"], ["E2", "Mobile signup events around release 4.12.0", "28"], ["E3", "Brand Search daily budget and clicks", "14"]].map(([id, what, rows]) => (
-            <div className="pv-row" key={id}><span><mark style={{ background: "var(--ds-accent)", color: "var(--ds-on-accent)", padding: "0 4px", borderRadius: 3 }}>{id}</mark></span><span>{what}</span><span className="pv-n">{rows} rows</span></div>
+            <div className="pv-row" key={id}><span><mark className="pv-mark">{id}</mark></span><span>{what}</span><span className="pv-n">{rows} rows</span></div>
           ))}
         </>
       ),
@@ -64,6 +60,5 @@ export const content: LandingContent = {
     },
   ],
   closing: "Know why, before the meeting starts.",
-  scene: "prism",
   footer: "WhyBot. Built on Zetaris, Meterless and NVIDIA Nemotron for the Open Agent Hackathon 2026.",
 };
